@@ -1,0 +1,3174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Stever QR Studio — créez et personnalisez des QR codes : couleurs, dégradés, formes, logo, légende, export PNG et SVG. © ING STEVER.">
+<meta name="author" content="ING STEVER">
+<meta name="theme-color" content="#080d18">
+<title>Stever QR Studio — Générateur de QR code personnalisé</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%238b5cf6'/%3E%3Cstop offset='1' stop-color='%230891b2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M45 19H27a8.5 8.5 0 0 0 0 17h11a8.5 8.5 0 0 1 0 17H19' fill='none' stroke='white' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+  :root{
+    color-scheme: dark;
+    --bg: #070b14;
+    --surface: rgba(17, 25, 42, .78);
+    --surface-solid: #111a2b;
+    --surface-soft: rgba(255, 255, 255, .032);
+    --line: rgba(148, 163, 184, .14);
+    --line-strong: rgba(148, 163, 184, .25);
+    --text: #e9effc;
+    --muted: #8d9db8;
+    --muted-strong: #aebbd2;
+    --accent: #8b5cf6;
+    --accent-soft: rgba(139, 92, 246, .16);
+    --accent-2: #22d3ee;
+    --ok: #34d399;
+    --warn: #fbbf24;
+    --danger: #f87171;
+    --radius: 24px;
+    --shadow: 0 24px 70px rgba(0, 0, 0, .32);
+    --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --mono: "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  }
+
+  *{ box-sizing: border-box; }
+  [hidden]{ display: none !important; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--font);
+    color: var(--text);
+    background:
+      radial-gradient(1000px 680px at 8% -12%, rgba(124, 58, 237, .22), transparent 60%),
+      radial-gradient(900px 620px at 102% 4%, rgba(34, 211, 238, .13), transparent 56%),
+      radial-gradient(700px 600px at 50% 115%, rgba(14, 116, 144, .12), transparent 60%),
+      var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before{
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: .35;
+    background-image:
+      linear-gradient(rgba(148, 163, 184, .045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148, 163, 184, .045) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 78%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 78%);
+  }
+  ::selection{ background: rgba(139, 92, 246, .35); color: #fff; }
+  button, input, select, textarea{ font: inherit; }
+  button{ color: inherit; }
+  a{ color: inherit; }
+  svg{ display: block; }
+
+  ::-webkit-scrollbar{ width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track{ background: transparent; }
+  ::-webkit-scrollbar-thumb{
+    background: rgba(148, 163, 184, .22);
+    border-radius: 99px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover{ background-color: rgba(148, 163, 184, .38); }
+
+  .shell{
+    max-width: 1380px;
+    margin: 0 auto;
+    padding: 0 30px 46px;
+  }
+
+  /* ---------- Header ---------- */
+  .topbar{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 26px 2px 20px;
+  }
+  .brand{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+  .brand-mark{
+    position: relative;
+    width: 48px;
+    height: 48px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border-radius: 15px;
+    color: #fff;
+    background: linear-gradient(140deg, #8b5cf6 6%, #6d28d9 48%, #0891b2 100%);
+    box-shadow:
+      0 12px 32px rgba(124, 58, 237, .32),
+      inset 0 1px 0 rgba(255, 255, 255, .28);
+  }
+  .brand-mark::after{
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255,255,255,.2), transparent 45%);
+    pointer-events: none;
+  }
+  .brand-mark svg{ width: 24px; height: 24px; }
+  .brand-copy h1{
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -.025em;
+    line-height: 1.15;
+  }
+  .brand-copy p{
+    margin: 4px 0 0;
+    font-size: 12.5px;
+    color: var(--muted);
+    letter-spacing: .005em;
+  }
+  .top-actions{ display: flex; align-items: center; gap: 9px; flex: 0 0 auto; }
+  .btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 0 15px;
+    border-radius: 11px;
+    border: 1px solid transparent;
+    background: none;
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: .01em;
+    cursor: pointer;
+    transition: transform .18s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease, opacity .18s ease;
+    white-space: nowrap;
+  }
+  .btn svg{ width: 16px; height: 16px; }
+  .btn:hover{ transform: translateY(-1px); }
+  .btn:active{ transform: translateY(0); }
+  .btn:disabled{ opacity: .42; cursor: not-allowed; transform: none !important; }
+  .btn.ghost{
+    border-color: var(--line);
+    background: rgba(255, 255, 255, .035);
+    color: var(--muted-strong);
+  }
+  .btn.ghost:hover{ background: rgba(255, 255, 255, .065); border-color: var(--line-strong); color: var(--text); }
+  .btn.primary{
+    background: linear-gradient(120deg, #8b5cf6, #6d28d9 45%, #0891b2 100%);
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(139, 92, 246, .25), inset 0 1px 0 rgba(255,255,255,.2);
+  }
+  .btn.primary:hover:not(:disabled){ box-shadow: 0 14px 38px rgba(139, 92, 246, .36), inset 0 1px 0 rgba(255,255,255,.22); }
+  .btn.secondary{
+    border-color: var(--line);
+    background: rgba(255, 255, 255, .055);
+    color: var(--text);
+  }
+  .btn.secondary:hover{ background: rgba(255, 255, 255, .09); border-color: var(--line-strong); }
+  .btn.icon-only{ width: 44px; padding: 0; }
+
+  :focus-visible{
+    outline: 2px solid rgba(34, 211, 238, .85);
+    outline-offset: 2px;
+  }
+
+  /* ---------- Layout ---------- */
+  .layout{
+    display: grid;
+    grid-template-columns: minmax(400px, 555px) minmax(360px, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+  .builder{ display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+  .stage{ position: sticky; top: 20px; min-width: 0; }
+  .card{
+    position: relative;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background:
+      linear-gradient(160deg, rgba(255, 255, 255, .045), transparent 36%),
+      linear-gradient(180deg, rgba(19, 28, 47, .9), rgba(11, 18, 32, .92));
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(18px);
+    padding: 22px;
+  }
+  .card-head{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 17px;
+  }
+  .card-title{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    font-size: 14.5px;
+    font-weight: 650;
+    letter-spacing: -.005em;
+  }
+  .step{
+    width: 25px;
+    height: 25px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    border: 1px solid rgba(139, 92, 246, .36);
+    background: rgba(139, 92, 246, .13);
+    color: #c9b8ff;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .pill{
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 24px;
+    padding: 3px 9px;
+    border-radius: 99px;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, .035);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: .01em;
+    white-space: nowrap;
+  }
+  .pill.error{ color: #fca5a5; border-color: rgba(248, 113, 113, .3); background: rgba(248, 113, 113, .08); }
+
+  /* ---------- Type picker ---------- */
+  .type-grid{
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .type-btn{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 66px;
+    padding: 9px 4px 8px;
+    border: 1px solid transparent;
+    border-radius: 13px;
+    background: rgba(255, 255, 255, .028);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .005em;
+    cursor: pointer;
+    transition: background .18s ease, color .18s ease, border-color .18s ease, transform .18s ease;
+  }
+  .type-btn svg{ width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .type-btn:hover{ background: rgba(255, 255, 255, .055); color: var(--text); transform: translateY(-1px); }
+  .type-btn.active{
+    color: #f4f0ff;
+    border-color: rgba(139, 92, 246, .48);
+    background:
+      linear-gradient(180deg, rgba(139, 92, 246, .21), rgba(34, 211, 238, .055));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 8px 22px rgba(76, 29, 149, .16);
+  }
+  .type-btn.active svg{ color: #c4b5fd; }
+
+  /* ---------- Forms ---------- */
+  .type-forms{ margin-top: 16px; }
+  .type-form{ display: none; }
+  .type-form.active{ display: flex; flex-direction: column; gap: 12px; animation: formIn .22s ease both; }
+  @keyframes formIn{ from{ opacity: 0; transform: translateY(3px); } to{ opacity: 1; transform: none; } }
+
+  .field{ display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .field > span, .field > label{
+    color: var(--muted);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: .01em;
+  }
+  .field-row{ display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .hint{
+    margin: 1px 0 0;
+    color: #7485a2;
+    font-size: 10.8px;
+    font-style: normal;
+    line-height: 1.45;
+  }
+  input[type="text"], input[type="url"], input[type="email"], input[type="tel"], input[type="number"],
+  input[type="password"], textarea, select{
+    width: 100%;
+    min-height: 42px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: rgba(5, 10, 20, .52);
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.4;
+    outline: none;
+    transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+  }
+  input::placeholder, textarea::placeholder{ color: #5d6c86; }
+  input:hover, textarea:hover, select:hover{ border-color: rgba(148, 163, 184, .23); }
+  input:focus, textarea:focus, select:focus{
+    border-color: rgba(139, 92, 246, .65);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, .13);
+    background: rgba(5, 10, 20, .72);
+  }
+  textarea{ resize: vertical; min-height: 88px; line-height: 1.55; }
+  select{
+    appearance: none;
+    padding-right: 34px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238d9db8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    cursor: pointer;
+  }
+  .input-wrap{ position: relative; display: flex; }
+  .input-wrap input{ padding-right: 44px; }
+  .input-action{
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .input-action:hover{ color: var(--text); background: rgba(255, 255, 255, .06); }
+  .input-action svg{ width: 16px; height: 16px; }
+
+  .switch-line{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 2px 0;
+    cursor: pointer;
+  }
+  .switch-line > span:first-child{ display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .switch-line strong{ font-size: 12px; font-weight: 600; color: var(--muted-strong); }
+  .switch-line small{ font-size: 10.5px; color: #71819b; line-height: 1.35; }
+  .switch{ position: relative; width: 38px; height: 22px; flex: 0 0 auto; }
+  .switch input{ position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 2; }
+  .switch .track{
+    position: absolute;
+    inset: 0;
+    border-radius: 99px;
+    border: 1px solid var(--line-strong);
+    background: rgba(148, 163, 184, .13);
+    transition: background .2s ease, border-color .2s ease;
+  }
+  .switch .track::after{
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    box-shadow: 0 1px 3px rgba(0,0,0,.35);
+    transition: transform .2s ease, background .2s ease;
+  }
+  .switch input:checked + .track{
+    background: linear-gradient(120deg, rgba(139, 92, 246, .9), rgba(8, 145, 178, .9));
+    border-color: rgba(139, 92, 246, .5);
+  }
+  .switch input:checked + .track::after{ transform: translateX(16px); background: #fff; }
+  .switch input:focus-visible + .track{ outline: 2px solid rgba(34, 211, 238, .85); outline-offset: 2px; }
+
+  .ghost-mini{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    align-self: flex-start;
+    padding: 6px 9px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .035);
+    color: var(--muted-strong);
+    font-size: 10.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .18s ease, color .18s ease, border-color .18s ease;
+  }
+  .ghost-mini:hover{ background: rgba(34, 211, 238, .08); border-color: rgba(34, 211, 238, .28); color: #a5f3fc; }
+  .ghost-mini svg{ width: 13px; height: 13px; }
+
+  /* ---------- Style controls ---------- */
+  .group-label{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 2px 0 9px;
+    color: var(--muted-strong);
+    font-size: 11px;
+    font-weight: 650;
+    letter-spacing: .045em;
+    text-transform: uppercase;
+  }
+  .group-label span:last-child{ color: #677792; font-size: 10px; font-weight: 500; letter-spacing: .01em; text-transform: none; }
+  .shape-grid{
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 7px;
+    margin-bottom: 18px;
+  }
+  .shape-grid.eyes{ grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .shape-btn{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-height: 66px;
+    padding: 8px 3px 7px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, .022);
+    color: #8fa1be;
+    font-size: 9.7px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .18s ease, color .18s ease, border-color .18s ease, transform .18s ease;
+  }
+  .shape-btn svg{ width: 28px; height: 28px; }
+  .shape-btn:hover{ background: rgba(255, 255, 255, .05); color: var(--text); transform: translateY(-1px); }
+  .shape-btn.active{
+    border-color: rgba(34, 211, 238, .45);
+    background:
+      linear-gradient(180deg, rgba(34, 211, 238, .12), rgba(139, 92, 246, .06));
+    color: #a5f3fc;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+  }
+
+  .preset-head{ margin-top: 1px; }
+  .presets{ display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .preset{
+    position: relative;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: 3px solid #f8fafc;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--a), var(--b));
+    box-shadow: 0 0 0 1px rgba(148, 163, 184, .22), 0 5px 12px rgba(0,0,0,.22);
+    cursor: pointer;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .preset::after{
+    content: "";
+    position: absolute;
+    inset: 9px;
+    border-radius: 4px;
+    background: var(--bgc);
+    opacity: .92;
+  }
+  .preset::before{
+    content: "";
+    position: absolute;
+    z-index: 1;
+    inset: 14px;
+    border-radius: 2px;
+    background: linear-gradient(135deg, var(--a), var(--b));
+  }
+  .preset:hover{ transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(148, 163, 184, .35), 0 8px 18px rgba(0,0,0,.28); }
+  .preset.active{ box-shadow: 0 0 0 2px #0b1220, 0 0 0 4px rgba(34, 211, 238, .7), 0 7px 18px rgba(0,0,0,.25); }
+
+  .paint-block{
+    padding: 13px;
+    border: 1px solid var(--line);
+    border-radius: 15px;
+    background: rgba(255, 255, 255, .018);
+  }
+  .paint-block + .paint-block{ margin-top: 9px; }
+  .paint-head{ display: flex; align-items: center; justify-content: space-between; gap: 9px; margin-bottom: 11px; }
+  .paint-name{ display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 650; color: var(--muted-strong); white-space: nowrap; }
+  .paint-dot{
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+    border-radius: 5px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.18);
+  }
+  .seg{
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: rgba(5, 10, 20, .45);
+  }
+  .seg button{
+    padding: 4px 7px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #7f90ab;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .16s ease, color .16s ease;
+    white-space: nowrap;
+  }
+  .seg button:hover{ color: var(--text); }
+  .seg button.active{ background: rgba(139, 92, 246, .22); color: #ddd3ff; box-shadow: inset 0 0 0 1px rgba(139, 92, 246, .22); }
+  .colors{ display: flex; gap: 7px; }
+  .color-field{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 0;
+    min-width: 0;
+    height: 38px;
+    padding: 4px 8px 4px 4px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: rgba(5, 10, 20, .45);
+    transition: border-color .18s ease, box-shadow .18s ease;
+  }
+  .color-field:focus-within{ border-color: rgba(139, 92, 246, .55); box-shadow: 0 0 0 3px rgba(139, 92, 246, .1); }
+  .color-field.invalid{ border-color: rgba(248, 113, 113, .65); box-shadow: 0 0 0 3px rgba(248, 113, 113, .1); }
+  input[type="color"]{
+    width: 29px;
+    height: 29px;
+    flex: 0 0 auto;
+    padding: 0;
+    border: 0;
+    border-radius: 7px;
+    background: none;
+    cursor: pointer;
+    overflow: hidden;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  input[type="color"]::-webkit-color-swatch-wrapper{ padding: 0; }
+  input[type="color"]::-webkit-color-swatch{ border: 1px solid rgba(255,255,255,.18); border-radius: 7px; }
+  input[type="color"]::-moz-color-swatch{ border: 1px solid rgba(255,255,255,.18); border-radius: 7px; }
+  .hex{
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    border: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+    color: #c4d0e4;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    outline: none;
+  }
+  .angle-row{
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-top: 10px;
+    color: #7485a2;
+    font-size: 10px;
+    font-weight: 600;
+  }
+  .angle-row output{
+    min-width: 38px;
+    text-align: right;
+    color: #a9b8d0;
+    font-family: var(--mono);
+    font-size: 10px;
+  }
+  .angle-row input[type="range"]{ flex: 1; }
+  .eye-row{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 9px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .018);
+  }
+  .eye-row .switch-line{ flex: 1; }
+  .logo-box.has-logo{ border-style: solid; border-color: rgba(34, 211, 238, .22); background: rgba(34, 211, 238, .025); }
+  .eye-color-field{ flex: 0 0 42px; height: 38px; padding: 4px; }
+  .eye-color-field .hex{ display: none; }
+
+  /* ---------- Settings ---------- */
+  .setting{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px dashed rgba(148, 163, 184, .12);
+  }
+  .setting:first-of-type{ padding-top: 0; }
+  .setting:last-of-type{ border-bottom: 0; padding-bottom: 0; }
+  .setting.column{ display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
+  .setting-info{ min-width: 0; }
+  .setting-info strong{ display: block; font-size: 12.3px; font-weight: 600; color: var(--muted-strong); }
+  .setting-info span{ display: block; margin-top: 3px; color: #71819b; font-size: 10.5px; line-height: 1.4; }
+  .setting-top{ display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .setting-value{
+    flex: 0 0 auto;
+    padding: 4px 8px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: rgba(255, 255, 255, .035);
+    color: #c4b5fd;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .range-row{ display: flex; align-items: center; gap: 10px; }
+  .range-row input[type="range"]{ flex: 1; min-width: 0; }
+  .num-input{
+    width: 74px !important;
+    min-height: 34px !important;
+    flex: 0 0 auto;
+    padding: 6px 8px !important;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 11px !important;
+  }
+  input[type="range"]{
+    --p: 50%;
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    margin: 8px 0;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #8b5cf6 0%, #22d3ee var(--p), rgba(148, 163, 184, .16) var(--p));
+    cursor: pointer;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 3px solid #8b5cf6;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,.4);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover{ transform: scale(1.1); box-shadow: 0 0 0 5px rgba(139, 92, 246, .15); }
+  input[type="range"]::-moz-range-thumb{
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 3px solid #8b5cf6;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,.4);
+  }
+  .ecc-row{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .ecc-btn{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    padding: 8px 4px 7px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: rgba(255, 255, 255, .025);
+    color: var(--muted);
+    cursor: pointer;
+    transition: background .18s ease, border-color .18s ease, color .18s ease;
+  }
+  .ecc-btn b{ font-size: 12px; font-weight: 700; }
+  .ecc-btn span{ font-family: var(--mono); font-size: 8.5px; color: #72829d; }
+  .ecc-btn:hover{ background: rgba(255, 255, 255, .05); color: var(--text); }
+  .ecc-btn.active{
+    border-color: rgba(139, 92, 246, .45);
+    background: rgba(139, 92, 246, .13);
+    color: #ddd3ff;
+  }
+  .ecc-btn.active span{ color: #a995e8; }
+
+  .subhead{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 22px 0 11px;
+    color: #c7d2e5;
+    font-size: 12px;
+    font-weight: 650;
+  }
+  .subhead svg{ width: 14px; height: 14px; color: #8b9db9; }
+  .subhead::after{
+    content: "";
+    height: 1px;
+    flex: 1;
+    background: linear-gradient(90deg, var(--line), transparent);
+  }
+
+  .logo-box{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 67px;
+    padding: 10px;
+    border: 1.5px dashed rgba(148, 163, 184, .24);
+    border-radius: 13px;
+    background: rgba(255, 255, 255, .018);
+    cursor: pointer;
+    transition: border-color .18s ease, background .18s ease;
+  }
+  .logo-box:hover, .logo-box.dragover{
+    border-color: rgba(34, 211, 238, .48);
+    background: rgba(34, 211, 238, .055);
+  }
+  .logo-thumb{
+    width: 46px;
+    height: 46px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, .045);
+    color: #8294b0;
+  }
+  .logo-thumb svg{ width: 20px; height: 20px; }
+  .logo-thumb img{ width: 100%; height: 100%; object-fit: contain; background: #fff; padding: 3px; }
+  .logo-copy{ display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+  .logo-copy strong{ font-size: 12px; font-weight: 600; color: var(--muted-strong); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .logo-copy span{ font-size: 10.5px; color: #71819b; }
+  .remove-logo{
+    flex: 0 0 auto;
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 8px;
+    background: rgba(248, 113, 113, .08);
+    color: #fca5a5;
+    cursor: pointer;
+    transition: background .18s ease;
+  }
+  .remove-logo:hover{ background: rgba(248, 113, 113, .16); }
+  .remove-logo svg{ width: 14px; height: 14px; }
+  .logo-settings{ display: flex; flex-direction: column; gap: 2px; margin-top: 7px; }
+  .logo-settings .setting{ padding: 8px 0; }
+
+  .caption-fields{ display: flex; flex-direction: column; gap: 10px; margin-top: 2px; }
+  .caption-line{ display: flex; gap: 8px; align-items: center; }
+  .caption-line .color-field{ flex: 0 0 42px; height: 42px; padding: 5px; }
+  .caption-line .color-field .hex{ display: none; }
+  .caption-line input[type="text"]{ flex: 1; min-width: 0; }
+  .caption-meta{ display: flex; align-items: center; gap: 9px; }
+  .caption-meta span{ color: #71819b; font-size: 10px; white-space: nowrap; }
+  .caption-meta input[type="range"]{ flex: 1; }
+  .caption-meta output{ color: #a9b8d0; font-family: var(--mono); font-size: 10px; min-width: 42px; text-align: right; }
+
+  /* ---------- Preview stage ---------- */
+  .stage-card{ padding: 18px; }
+  .stage-head{ display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 13px; padding: 0 2px; }
+  .stage-title{ display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; color: var(--muted-strong); }
+  .preview-type{
+    padding: 3px 8px;
+    border: 1px solid var(--line);
+    border-radius: 99px;
+    background: rgba(255, 255, 255, .035);
+    color: #8d9db8;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: .02em;
+  }
+  .live{ display: inline-flex; align-items: center; gap: 7px; color: #6ee7b7; font-size: 10.5px; font-weight: 600; letter-spacing: .02em; }
+  .live i{
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #34d399;
+    box-shadow: 0 0 0 4px rgba(52, 211, 153, .1);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%, 100%{ opacity: 1; box-shadow: 0 0 0 4px rgba(52,211,153,.1); } 50%{ opacity: .55; box-shadow: 0 0 0 7px rgba(52,211,153,.03); } }
+
+  .canvas-wrap{
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 330px;
+    padding: 26px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, .075);
+    border-radius: 19px;
+    background-color: #0a1120;
+    background-image:
+      linear-gradient(45deg, rgba(255, 255, 255, .045) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(255, 255, 255, .045) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, .045) 75%),
+      linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, .045) 75%);
+    background-size: 18px 18px;
+    background-position: 0 0, 0 9px, 9px -9px, -9px 0;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+  }
+  .canvas-wrap::before{
+    content: "";
+    position: absolute;
+    width: 75%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(139, 92, 246, .14), transparent 68%);
+    filter: blur(20px);
+    pointer-events: none;
+  }
+  #canvas{
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: min(56vh, 600px);
+    border-radius: 5px;
+    box-shadow: 0 16px 44px rgba(0, 0, 0, .34);
+    background: transparent;
+  }
+  .canvas-empty{
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 32px;
+    text-align: center;
+    background: rgba(7, 12, 22, .52);
+    backdrop-filter: blur(2px);
+  }
+  .empty-icon{
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 4px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .035);
+    color: #7889a4;
+  }
+  .empty-icon svg{ width: 22px; height: 22px; }
+  .canvas-empty strong{ font-size: 13px; font-weight: 600; color: #c7d3e6; }
+  .canvas-empty span{ max-width: 290px; font-size: 11px; line-height: 1.5; color: #71819b; }
+
+  .meta{ display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; min-height: 22px; }
+  .chip{
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border: 1px solid var(--line);
+    border-radius: 99px;
+    background: rgba(255, 255, 255, .028);
+    color: #94a3bc;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: .015em;
+    white-space: nowrap;
+  }
+  .chip.accent{ color: #c4b5fd; border-color: rgba(139, 92, 246, .22); background: rgba(139, 92, 246, .065); }
+  .warnings{ display: flex; flex-direction: column; gap: 6px; margin-top: 2px; }
+  .warning{
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    margin-top: 8px;
+    padding: 8px 10px;
+    border: 1px solid rgba(245, 158, 11, .19);
+    border-radius: 9px;
+    background: rgba(245, 158, 11, .055);
+    color: #e7bb6a;
+    font-size: 10.3px;
+    line-height: 1.45;
+  }
+  .warning svg{ width: 13px; height: 13px; flex: 0 0 auto; margin-top: 1px; }
+
+  .export-row{ display: grid; grid-template-columns: 1fr 1fr 44px; gap: 8px; margin-top: 13px; }
+  .export-btn{ min-height: 46px; border-radius: 12px; font-size: 12px; }
+  .icon-copy{
+    width: 44px;
+    min-height: 46px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .035);
+    color: var(--muted-strong);
+    cursor: pointer;
+    transition: background .18s ease, border-color .18s ease, color .18s ease, opacity .18s ease;
+  }
+  .icon-copy:hover:not(:disabled){ background: rgba(255, 255, 255, .07); border-color: var(--line-strong); color: var(--text); }
+  .icon-copy:disabled{ opacity: .42; cursor: not-allowed; }
+  .icon-copy svg{ width: 17px; height: 17px; }
+  .export-note{ margin: 9px 2px 0; text-align: center; color: #65748d; font-size: 9.8px; letter-spacing: .01em; }
+
+  .tip-card{
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    margin-top: 14px;
+    padding: 13px 15px;
+    border: 1px solid rgba(34, 211, 238, .13);
+    border-radius: 14px;
+    background:
+      linear-gradient(120deg, rgba(34, 211, 238, .055), rgba(139, 92, 246, .045));
+  }
+  .tip-icon{
+    width: 28px;
+    height: 28px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: rgba(34, 211, 238, .09);
+    color: #67e8f9;
+  }
+  .tip-icon svg{ width: 14px; height: 14px; }
+  .tip-card p{ margin: 1px 0 0; font-size: 10.8px; line-height: 1.55; color: #8194b0; }
+  .tip-card strong{ color: #b9c9df; font-weight: 600; }
+
+  .footer{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 22px;
+    padding: 0 2px;
+    color: #5f6f88;
+    font-size: 10.3px;
+    line-height: 1.5;
+  }
+  .footer .secure{ display: inline-flex; align-items: center; gap: 6px; color: #76919e; white-space: nowrap; }
+  .footer .secure svg{ width: 12px; height: 12px; }
+  .footer a{ color: #7dd3fc; text-decoration: none; border-bottom: 1px solid rgba(125, 211, 252, .35); }
+  .footer a:hover{ border-bottom-color: #7dd3fc; }
+
+  /* ---------- Toast ---------- */
+  .toast{
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    z-index: 100;
+    max-width: min(420px, calc(100vw - 32px));
+    padding: 11px 16px;
+    border: 1px solid var(--line-strong);
+    border-radius: 11px;
+    background: rgba(15, 24, 41, .96);
+    color: #e2e8f0;
+    font-size: 12px;
+    line-height: 1.4;
+    text-align: center;
+    box-shadow: 0 16px 45px rgba(0, 0, 0, .45);
+    opacity: 0;
+    transform: translate(-50%, 18px);
+    pointer-events: none;
+    transition: opacity .22s ease, transform .22s ease;
+    backdrop-filter: blur(10px);
+  }
+  .toast.show{ opacity: 1; transform: translate(-50%, 0); }
+  .toast.error{ border-color: rgba(248, 113, 113, .4); color: #fecaca; }
+
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{ animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+
+  .hex{
+    min-height: 0 !important;
+    height: 20px;
+    line-height: 20px;
+  }
+  option{ background: #0b1424; color: var(--text); }
+
+  @media (max-width: 1120px){
+    .layout{
+      grid-template-columns: minmax(0, 1fr);
+      max-width: 880px;
+      margin: 0 auto;
+    }
+    .stage{ position: static; order: -1; }
+    #canvas{ max-height: min(46vh, 520px); }
+    .tip-card{ margin-bottom: 2px; }
+  }
+
+  @media (max-width: 760px){
+    .shell{ padding: 0 17px 34px; }
+    .topbar{ padding: 18px 0 14px; gap: 12px; }
+    .brand-copy p{ display: none; }
+    .brand-copy h1{ font-size: 18px; }
+    .top-actions .btn{ padding: 0 11px; font-size: 11.5px; }
+    .card{ padding: 18px; border-radius: 20px; }
+    .builder{ gap: 14px; }
+    .type-btn{ min-height: 62px; }
+    .field-row{ grid-template-columns: 1fr; }
+    .shape-grid{ gap: 6px; }
+    .shape-btn{ min-height: 62px; }
+    .stage-card{ padding: 14px; }
+    .canvas-wrap{ padding: 16px; min-height: 265px; border-radius: 16px; }
+    #canvas{ max-height: 40vh; }
+    .paint-head{ flex-wrap: wrap; }
+    .paint-name{ margin-right: auto; }
+    .seg button{ padding: 4px 6px; }
+    .footer{ flex-direction: column; align-items: flex-start; gap: 5px; }
+    .footer .secure{ white-space: normal; }
+    .caption-line{ flex-wrap: wrap; }
+    .caption-line .color-field{ flex: 0 0 42px; }
+     .eye-color-field{ flex: 0 0 42px; }
+  }
+
+  @media (max-width: 480px){
+    .shell{ padding: 0 12px 28px; }
+    .topbar{ padding-top: 15px; }
+    .top-actions .btn{ min-height: 38px; }
+    .brand-mark{ width: 42px; height: 42px; border-radius: 13px; }
+    .brand-mark svg{ width: 21px; height: 21px; }
+    .card{ padding: 16px; }
+    .card-title{ font-size: 13.5px; }
+    .type-grid{ gap: 5px; }
+    .type-btn{ min-height: 58px; gap: 5px; font-size: 9.8px; border-radius: 11px; }
+    .type-btn svg{ width: 17px; height: 17px; }
+    .shape-grid{ gap: 5px; }
+    .shape-grid.eyes{ gap: 5px; }
+    .shape-btn{ min-height: 58px; padding: 6px 2px; font-size: 8.7px; border-radius: 9px; }
+    .shape-btn svg{ width: 24px; height: 24px; }
+    .paint-head{ flex-direction: column; align-items: flex-start; gap: 8px; }
+    .paint-head .seg{ width: 100%; }
+    .paint-head .seg button{ flex: 1; }
+    .eye-row{ flex-wrap: wrap; }
+    .eye-color-field{ flex: 1 1 100%; }
+    .setting-top{ flex-direction: column; gap: 6px; }
+    .canvas-wrap{ min-height: 225px; padding: 12px; }
+    #canvas{ max-height: 35vh; }
+    .export-row{ grid-template-columns: 1fr 1fr 44px; }
+    .export-btn{ min-height: 44px; font-size: 11px; }
+    .icon-copy{ width: 44px; min-height: 44px; }
+    .tip-card{ padding: 11px 12px; }
+    .toast{ bottom: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M16.6 6.7H9.4a3 3 0 0 0 0 6h5.2a3 3 0 0 1 0 6H7.4" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="2.9" y="2.9" width="3.2" height="3.2" rx="1" fill="currentColor"/>
+          <rect x="17.9" y="17.9" width="3.2" height="3.2" rx="1" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="brand-copy">
+        <h1>Stever QR Studio</h1>
+        <p>Des QR codes qui vous ressemblent — par ING STEVER.</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button type="button" class="btn ghost" id="randomize" title="Appliquer un style aléatoire">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="m4 4 5 5"/>
+        </svg>
+        <span>Surprise</span>
+      </button>
+      <button type="button" class="btn ghost" id="reset" title="Tout réinitialiser">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>
+        </svg>
+        <span>Réinitialiser</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="builder" aria-label="Personnalisation du QR code">
+
+      <article class="card">
+        <div class="card-head">
+          <div class="card-title"><span class="step">1</span> Contenu</div>
+          <span class="pill" id="payloadInfo">—</span>
+        </div>
+        <div class="type-grid" id="typeGrid" role="group" aria-label="Type de contenu"></div>
+        <div class="type-forms" id="typeForms"></div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <div class="card-title"><span class="step">2</span> Apparence</div>
+          <span class="pill">Formes &amp; couleurs</span>
+        </div>
+
+        <div class="group-label"><span>Modules</span><span>Forme des points</span></div>
+        <div class="shape-grid" id="moduleShapes" role="group" aria-label="Forme des modules"></div>
+
+        <div class="group-label"><span>Yeux</span><span>Coins du QR code</span></div>
+        <div class="shape-grid eyes" id="eyeShapes" role="group" aria-label="Forme des yeux"></div>
+
+        <div class="group-label preset-head"><span>Palettes</span><span>Appliquez une ambiance</span></div>
+        <div class="presets" id="presets" role="group" aria-label="Palettes de couleurs"></div>
+
+        <div class="paint-block">
+          <div class="paint-head">
+            <div class="paint-name"><span class="paint-dot" id="fgMini"></span>Modules</div>
+            <div class="seg" role="group" aria-label="Remplissage des modules">
+              <button type="button" data-set="fgMode" data-value="solid">Uni</button>
+              <button type="button" data-set="fgMode" data-value="linear">Linéaire</button>
+              <button type="button" data-set="fgMode" data-value="radial">Radial</button>
+            </div>
+          </div>
+          <div class="colors">
+            <div class="color-field" data-color-field="fg1">
+              <input type="color" data-color="fg1" value="#7c3aed" aria-label="Couleur principale des modules">
+              <input type="text" class="hex" data-hex="fg1" value="#7C3AED" maxlength="7" spellcheck="false" aria-label="Code hexadécimal de la couleur principale">
+            </div>
+            <div class="color-field" data-color-field="fg2">
+              <input type="color" data-color="fg2" value="#0891b2" aria-label="Seconde couleur des modules">
+              <input type="text" class="hex" data-hex="fg2" value="#0891B2" maxlength="7" spellcheck="false" aria-label="Code hexadécimal de la seconde couleur">
+            </div>
+          </div>
+          <div class="angle-row" data-angle-field="fg">
+            <span>Angle</span>
+            <input type="range" min="0" max="360" step="1" data-design="fgAngle" aria-label="Angle du dégradé des modules">
+            <output data-show="fgAngle">45°</output>
+          </div>
+        </div>
+
+        <div class="paint-block">
+          <div class="paint-head">
+            <div class="paint-name"><span class="paint-dot" id="bgMini"></span>Fond</div>
+            <div class="seg" role="group" aria-label="Remplissage du fond">
+              <button type="button" data-set="bgMode" data-value="solid">Uni</button>
+              <button type="button" data-set="bgMode" data-value="linear">Linéaire</button>
+              <button type="button" data-set="bgMode" data-value="radial">Radial</button>
+            </div>
+          </div>
+          <div class="colors">
+            <div class="color-field" data-color-field="bg1">
+              <input type="color" data-color="bg1" value="#ffffff" aria-label="Couleur de fond principale">
+              <input type="text" class="hex" data-hex="bg1" value="#FFFFFF" maxlength="7" spellcheck="false" aria-label="Code hexadécimal du fond">
+            </div>
+            <div class="color-field" data-color-field="bg2">
+              <input type="color" data-color="bg2" value="#e0f2fe" aria-label="Seconde couleur de fond">
+              <input type="text" class="hex" data-hex="bg2" value="#E0F2FE" maxlength="7" spellcheck="false" aria-label="Code hexadécimal de la seconde couleur de fond">
+            </div>
+          </div>
+          <div class="angle-row" data-angle-field="bg">
+            <span>Angle</span>
+            <input type="range" min="0" max="360" step="1" data-design="bgAngle" aria-label="Angle du dégradé de fond">
+            <output data-show="bgAngle">135°</output>
+          </div>
+          <label class="switch-line" style="margin-top:10px">
+            <span><strong>Fond transparent</strong><small>Idéal pour le PNG et l’intégration web</small></span>
+            <span class="switch">
+              <input type="checkbox" data-toggle="bgTransparent">
+              <span class="track"></span>
+            </span>
+          </label>
+        </div>
+
+        <div class="eye-row">
+          <label class="switch-line">
+            <span><strong>Couleur des yeux</strong><small>Personnaliser les trois coins</small></span>
+            <span class="switch">
+              <input type="checkbox" data-toggle="eyeCustom">
+              <span class="track"></span>
+            </span>
+          </label>
+          <div class="color-field eye-color-field" data-eye-color-field hidden>
+            <input type="color" data-color="eyeColor" value="#0f172a" aria-label="Couleur des yeux">
+            <input type="text" class="hex" data-hex="eyeColor" value="#0F172A" maxlength="7" spellcheck="false" aria-label="Code hexadécimal des yeux">
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <div class="card-title"><span class="step">3</span> Finitions</div>
+          <span class="pill">Qualité &amp; logo</span>
+        </div>
+
+        <div class="setting column">
+          <div class="setting-top">
+            <div class="setting-info">
+              <strong>Correction d’erreur</strong>
+              <span>Plus le niveau est élevé, plus le code résiste aux dégradations.</span>
+            </div>
+          </div>
+          <div class="ecc-row" role="group" aria-label="Niveau de correction d’erreur">
+            <button type="button" class="ecc-btn" data-set="ecc" data-value="L"><b>L</b><span>~7 %</span></button>
+            <button type="button" class="ecc-btn" data-set="ecc" data-value="M"><b>M</b><span>~15 %</span></button>
+            <button type="button" class="ecc-btn" data-set="ecc" data-value="Q"><b>Q</b><span>~25 %</span></button>
+            <button type="button" class="ecc-btn" data-set="ecc" data-value="H"><b>H</b><span>~30 %</span></button>
+          </div>
+        </div>
+
+        <div class="setting column">
+          <div class="setting-top">
+            <div class="setting-info">
+              <strong>Taille de l’image</strong>
+              <span>Résolution du fichier exporté.</span>
+            </div>
+            <span class="setting-value" data-show="size">1024 px</span>
+          </div>
+          <div class="range-row">
+            <input type="range" min="256" max="2048" step="8" data-design="size" aria-label="Taille de l’image">
+            <input type="number" class="num-input" min="256" max="2048" step="1" data-design="size" aria-label="Taille exacte en pixels">
+          </div>
+        </div>
+
+        <div class="setting column">
+          <div class="setting-top">
+            <div class="setting-info">
+              <strong>Marge de sécurité</strong>
+              <span>Zone blanche autour du code, en modules.</span>
+            </div>
+            <span class="setting-value" data-show="margin">4 modules</span>
+          </div>
+          <div class="range-row">
+            <input type="range" min="0" max="12" step="1" data-design="margin" aria-label="Marge autour du QR code">
+          </div>
+        </div>
+
+        <div class="subhead">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>
+          </svg>
+          Logo central
+        </div>
+
+        <div class="logo-box" id="logoBox" role="button" tabindex="0" aria-label="Ajouter un logo">
+          <div class="logo-thumb">
+            <svg id="logoPlaceholder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>
+            </svg>
+            <img id="logoPreviewImg" alt="Aperçu du logo" hidden>
+          </div>
+          <div class="logo-copy">
+            <strong id="logoTitle">Ajouter un logo</strong>
+            <span id="logoSub">PNG, JPG ou SVG · 2 Mo max</span>
+          </div>
+          <button type="button" class="remove-logo" id="removeLogo" title="Retirer le logo" aria-label="Retirer le logo" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <input type="file" id="logoInput" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif" hidden>
+
+        <div class="logo-settings" id="logoPanel" hidden>
+          <div class="setting">
+            <div class="setting-info"><strong>Taille du logo</strong></div>
+            <span class="setting-value" data-show="logoSize">21 %</span>
+          </div>
+          <div class="range-row">
+            <input type="range" min="10" max="30" step="1" data-design="logoSize" aria-label="Taille du logo">
+          </div>
+          <div class="setting">
+            <div class="setting-info"><strong>Marge intérieure</strong></div>
+            <span class="setting-value" data-show="logoPad">12 %</span>
+          </div>
+          <div class="range-row">
+            <input type="range" min="0" max="30" step="1" data-design="logoPad" aria-label="Marge autour du logo">
+          </div>
+          <label class="switch-line" style="margin-top:7px">
+            <span><strong>Arrondir le logo</strong><small>Adoucit le cadre blanc</small></span>
+            <span class="switch">
+              <input type="checkbox" data-toggle="logoRound">
+              <span class="track"></span>
+            </span>
+          </label>
+        </div>
+
+        <div class="subhead">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 7V5a2 2 0 0 1 2-2h2M16 3h2a2 2 0 0 1 2 2v2M20 17v2a2 2 0 0 1-2 2h-2M8 21H6a2 2 0 0 1-2-2v-2"/><path d="M8 12h8"/>
+          </svg>
+          Légende
+        </div>
+        <div class="caption-fields">
+          <div class="caption-line">
+            <div class="color-field">
+              <input type="color" data-color="captionColor" value="#0b1220" aria-label="Couleur de la légende">
+              <input type="text" class="hex" data-hex="captionColor" value="#0B1220" maxlength="7" spellcheck="false" aria-label="Code hexadécimal de la légende">
+            </div>
+            <input type="text" data-design="caption" maxlength="40" placeholder="Ex : Scannez-moi" aria-label="Texte de la légende">
+          </div>
+          <p class="hint">Laissez vide pour masquer la légende sous le QR code.</p>
+          <div class="caption-meta">
+            <span>Taille</span>
+            <input type="range" min="2" max="6" step="0.2" data-design="captionSize" aria-label="Taille de la légende">
+            <output data-show="captionSize">3.6 %</output>
+          </div>
+        </div>
+      </article>
+
+    </section>
+
+    <aside class="stage" aria-label="Aperçu et export">
+      <div class="card stage-card">
+        <div class="stage-head">
+          <div class="stage-title">Aperçu <span class="preview-type" id="previewType">Lien</span></div>
+          <span class="live"><i></i>Live</span>
+        </div>
+
+        <div class="canvas-wrap" id="canvasWrap">
+          <canvas id="canvas" width="1024" height="1024" aria-label="Aperçu du QR code généré"></canvas>
+          <div class="canvas-empty" id="canvasEmpty" hidden>
+            <div class="empty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="7" width="10" height="10" rx="2"/>
+              </svg>
+            </div>
+            <strong id="emptyTitle">Ajoutez du contenu</strong>
+            <span id="emptyText">Renseignez les champs pour voir votre QR code apparaître.</span>
+          </div>
+        </div>
+
+        <div class="meta" id="meta"></div>
+        <div class="warnings" id="warnings"></div>
+
+        <div class="export-row">
+          <button type="button" class="btn primary export-btn" id="dlPng">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>
+            </svg>
+            Télécharger PNG
+          </button>
+          <button type="button" class="btn secondary export-btn" id="dlSvg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m8 6-6 6 6 6"/><path d="m16 6 6 6-6 6"/>
+            </svg>
+            SVG
+          </button>
+          <button type="button" class="icon-copy" id="copyBtn" title="Copier l’image" aria-label="Copier l’image dans le presse-papiers">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+          </button>
+        </div>
+        <p class="export-note">PNG haute résolution · SVG vectoriel · généré dans votre navigateur</p>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2V17h6v-.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2Z"/>
+          </svg>
+        </div>
+        <p><strong>Pour un scan impeccable :</strong> gardez des modules sombres sur un fond clair, une marge d’au moins 4 modules et le niveau de correction H si vous ajoutez un logo. Testez toujours avec deux téléphones différents.</p>
+      </div>
+
+      <footer class="footer">
+        <span>Stever QR Studio — © 2026 ING STEVER. Tous droits réservés · <a href="https://amerbenouis.github.io/qr-studio/" target="_blank" rel="noopener">Site en ligne</a></span>
+        <span class="secure">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+          </svg>
+          Tout reste sur votre appareil
+        </span>
+      </footer>
+    </aside>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/**
+ * Minified by jsDelivr using Terser v5.37.0.
+ * Original file: /npm/qrcode-generator@1.4.4/qrcode.js
+ *
+ * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
+ */
+var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],f={},c=function(t,r){o=function(t){for(var r=new Array(t),e=0;e<t;e+=1){r[e]=new Array(t);for(var n=0;n<t;n+=1)r[e][n]=null}return r}(i=4*e+17),l(0,0),l(i-7,0),l(0,i-7),s(),h(),d(t,r),e>=7&&v(t),null==a&&(a=p(e,n,u)),w(a,r)},l=function(t,r){for(var e=-1;e<=7;e+=1)if(!(t+e<=-1||i<=t+e))for(var n=-1;n<=7;n+=1)r+n<=-1||i<=r+n||(o[t+e][r+n]=0<=e&&e<=6&&(0==n||6==n)||0<=n&&n<=6&&(0==e||6==e)||2<=e&&e<=4&&2<=n&&n<=4)},h=function(){for(var t=8;t<i-8;t+=1)null==o[t][6]&&(o[t][6]=t%2==0);for(var r=8;r<i-8;r+=1)null==o[6][r]&&(o[6][r]=r%2==0)},s=function(){for(var t=B.getPatternPosition(e),r=0;r<t.length;r+=1)for(var n=0;n<t.length;n+=1){var i=t[r],a=t[n];if(null==o[i][a])for(var u=-2;u<=2;u+=1)for(var f=-2;f<=2;f+=1)o[i+u][a+f]=-2==u||2==u||-2==f||2==f||0==u&&0==f}},v=function(t){for(var r=B.getBCHTypeNumber(e),n=0;n<18;n+=1){var a=!t&&1==(r>>n&1);o[Math.floor(n/3)][n%3+i-8-3]=a}for(n=0;n<18;n+=1){a=!t&&1==(r>>n&1);o[n%3+i-8-3][Math.floor(n/3)]=a}},d=function(t,r){for(var e=n<<3|r,a=B.getBCHTypeInfo(e),u=0;u<15;u+=1){var f=!t&&1==(a>>u&1);u<6?o[u][8]=f:u<8?o[u+1][8]=f:o[i-15+u][8]=f}for(u=0;u<15;u+=1){f=!t&&1==(a>>u&1);u<8?o[8][i-u-1]=f:u<9?o[8][15-u-1+1]=f:o[8][15-u-1]=f}o[i-8][8]=!t},w=function(t,r){for(var e=-1,n=i-1,a=7,u=0,f=B.getMaskFunction(r),c=i-1;c>0;c-=2)for(6==c&&(c-=1);;){for(var g=0;g<2;g+=1)if(null==o[n][c-g]){var l=!1;u<t.length&&(l=1==(t[u]>>>a&1)),f(n,c-g)&&(l=!l),o[n][c-g]=l,-1==(a-=1)&&(u+=1,a=7)}if((n+=e)<0||i<=n){n-=e,e=-e;break}}},p=function(t,r,e){for(var n=A.getRSBlocks(t,r),o=b(),i=0;i<e.length;i+=1){var a=e[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var u=0;for(i=0;i<n.length;i+=1)u+=n[i].dataCount;if(o.getLengthInBits()>8*u)throw"code length overflow. ("+o.getLengthInBits()+">"+8*u+")";for(o.getLengthInBits()+4<=8*u&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(!1);for(;!(o.getLengthInBits()>=8*u||(o.put(236,8),o.getLengthInBits()>=8*u));)o.put(17,8);return function(t,r){for(var e=0,n=0,o=0,i=new Array(r.length),a=new Array(r.length),u=0;u<r.length;u+=1){var f=r[u].dataCount,c=r[u].totalCount-f;n=Math.max(n,f),o=Math.max(o,c),i[u]=new Array(f);for(var g=0;g<i[u].length;g+=1)i[u][g]=255&t.getBuffer()[g+e];e+=f;var l=B.getErrorCorrectPolynomial(c),h=k(i[u],l.getLength()-1).mod(l);for(a[u]=new Array(l.getLength()-1),g=0;g<a[u].length;g+=1){var s=g+h.getLength()-a[u].length;a[u][g]=s>=0?h.getAt(s):0}}var v=0;for(g=0;g<r.length;g+=1)v+=r[g].totalCount;var d=new Array(v),w=0;for(g=0;g<n;g+=1)for(u=0;u<r.length;u+=1)g<i[u].length&&(d[w]=i[u][g],w+=1);for(g=0;g<o;g+=1)for(u=0;u<r.length;u+=1)g<a[u].length&&(d[w]=a[u][g],w+=1);return d}(o,n)};f.addData=function(t,r){var e=null;switch(r=r||"Byte"){case"Numeric":e=M(t);break;case"Alphanumeric":e=x(t);break;case"Byte":e=m(t);break;case"Kanji":e=L(t);break;default:throw"mode:"+r}u.push(e),a=null},f.isDark=function(t,r){if(t<0||i<=t||r<0||i<=r)throw t+","+r;return o[t][r]},f.getModuleCount=function(){return i},f.make=function(){if(e<1){for(var t=1;t<40;t++){for(var r=A.getRSBlocks(t,n),o=b(),i=0;i<u.length;i++){var a=u[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var g=0;for(i=0;i<r.length;i++)g+=r[i].dataCount;if(o.getLengthInBits()<=8*g)break}e=t}c(!1,function(){for(var t=0,r=0,e=0;e<8;e+=1){c(!0,e);var n=B.getLostPoint(f);(0==e||t>n)&&(t=n,r=e)}return r}())},f.createTableTag=function(t,r){t=t||2;var e="";e+='<table style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: "+(r=void 0===r?4*t:r)+"px;",e+='">',e+="<tbody>";for(var n=0;n<f.getModuleCount();n+=1){e+="<tr>";for(var o=0;o<f.getModuleCount();o+=1)e+='<td style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: 0px;",e+=" width: "+t+"px;",e+=" height: "+t+"px;",e+=" background-color: ",e+=f.isDark(n,o)?"#000000":"#ffffff",e+=";",e+='"/>';e+="</tr>"}return e+="</tbody>",e+="</table>"},f.createSvgTag=function(t,r,e,n){var o={};"object"==typeof arguments[0]&&(t=(o=arguments[0]).cellSize,r=o.margin,e=o.alt,n=o.title),t=t||2,r=void 0===r?4*t:r,(e="string"==typeof e?{text:e}:e||{}).text=e.text||null,e.id=e.text?e.id||"qrcode-description":null,(n="string"==typeof n?{text:n}:n||{}).text=n.text||null,n.id=n.text?n.id||"qrcode-title":null;var i,a,u,c,g=f.getModuleCount()*t+2*r,l="";for(c="l"+t+",0 0,"+t+" -"+t+",0 0,-"+t+"z ",l+='<svg version="1.1" xmlns="http://www.w3.org/2000/svg"',l+=o.scalable?"":' width="'+g+'px" height="'+g+'px"',l+=' viewBox="0 0 '+g+" "+g+'" ',l+=' preserveAspectRatio="xMinYMin meet"',l+=n.text||e.text?' role="img" aria-labelledby="'+y([n.id,e.id].join(" ").trim())+'"':"",l+=">",l+=n.text?'<title id="'+y(n.id)+'">'+y(n.text)+"</title>":"",l+=e.text?'<description id="'+y(e.id)+'">'+y(e.text)+"</description>":"",l+='<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>',l+='<path d="',a=0;a<f.getModuleCount();a+=1)for(u=a*t+r,i=0;i<f.getModuleCount();i+=1)f.isDark(a,i)&&(l+="M"+(i*t+r)+","+u+c);return l+='" stroke="transparent" fill="black"/>',l+="</svg>"},f.createDataURL=function(t,r){t=t||2,r=void 0===r?4*t:r;var e=f.getModuleCount()*t+2*r,n=r,o=e-r;return I(e,e,(function(r,e){if(n<=r&&r<o&&n<=e&&e<o){var i=Math.floor((r-n)/t),a=Math.floor((e-n)/t);return f.isDark(a,i)?0:1}return 1}))},f.createImgTag=function(t,r,e){t=t||2,r=void 0===r?4*t:r;var n=f.getModuleCount()*t+2*r,o="";return o+="<img",o+=' src="',o+=f.createDataURL(t,r),o+='"',o+=' width="',o+=n,o+='"',o+=' height="',o+=n,o+='"',e&&(o+=' alt="',o+=y(e),o+='"'),o+="/>"};var y=function(t){for(var r="",e=0;e<t.length;e+=1){var n=t.charAt(e);switch(n){case"<":r+="&lt;";break;case">":r+="&gt;";break;case"&":r+="&amp;";break;case'"':r+="&quot;";break;default:r+=n}}return r};return f.createASCII=function(t,r){if((t=t||1)<2)return function(t){t=void 0===t?2:t;var r,e,n,o,i,a=1*f.getModuleCount()+2*t,u=t,c=a-t,g={"██":"█","█ ":"▀"," █":"▄","  ":" "},l={"██":"▀","█ ":"▀"," █":" ","  ":" "},h="";for(r=0;r<a;r+=2){for(n=Math.floor((r-u)/1),o=Math.floor((r+1-u)/1),e=0;e<a;e+=1)i="█",u<=e&&e<c&&u<=r&&r<c&&f.isDark(n,Math.floor((e-u)/1))&&(i=" "),u<=e&&e<c&&u<=r+1&&r+1<c&&f.isDark(o,Math.floor((e-u)/1))?i+=" ":i+="█",h+=t<1&&r+1>=c?l[i]:g[i];h+="\n"}return a%2&&t>0?h.substring(0,h.length-a-1)+Array(a+1).join("▀"):h.substring(0,h.length-1)}(r);t-=1,r=void 0===r?2*t:r;var e,n,o,i,a=f.getModuleCount()*t+2*r,u=r,c=a-r,g=Array(t+1).join("██"),l=Array(t+1).join("  "),h="",s="";for(e=0;e<a;e+=1){for(o=Math.floor((e-u)/t),s="",n=0;n<a;n+=1)i=1,u<=n&&n<c&&u<=e&&e<c&&f.isDark(o,Math.floor((n-u)/t))&&(i=0),s+=i?g:l;for(o=0;o<t;o+=1)h+=s+"\n"}return h.substring(0,h.length-1)},f.renderTo2dContext=function(t,r){r=r||2;for(var e=f.getModuleCount(),n=0;n<e;n++)for(var o=0;o<e;o++)t.fillStyle=f.isDark(n,o)?"black":"white",t.fillRect(n*r,o*r,r,r)},f};t.stringToBytes=(t.stringToBytesFuncs={default:function(t){for(var r=[],e=0;e<t.length;e+=1){var n=t.charCodeAt(e);r.push(255&n)}return r}}).default,t.createStringToBytes=function(t,r){var e=function(){for(var e=S(t),n=function(){var t=e.read();if(-1==t)throw"eof";return t},o=0,i={};;){var a=e.read();if(-1==a)break;var u=n(),f=n()<<8|n();i[String.fromCharCode(a<<8|u)]=f,o+=1}if(o!=r)throw o+" != "+r;return i}(),n="?".charCodeAt(0);return function(t){for(var r=[],o=0;o<t.length;o+=1){var i=t.charCodeAt(o);if(i<128)r.push(i);else{var a=e[t.charAt(o)];"number"==typeof a?(255&a)==a?r.push(a):(r.push(a>>>8),r.push(255&a)):r.push(n)}}return r}};var r,e,n,o,i,a=1,u=2,f=4,c=8,g={L:1,M:0,Q:3,H:2},l=0,h=1,s=2,v=3,d=4,w=5,p=6,y=7,B=(r=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],e=1335,n=7973,i=function(t){for(var r=0;0!=t;)r+=1,t>>>=1;return r},(o={}).getBCHTypeInfo=function(t){for(var r=t<<10;i(r)-i(e)>=0;)r^=e<<i(r)-i(e);return 21522^(t<<10|r)},o.getBCHTypeNumber=function(t){for(var r=t<<12;i(r)-i(n)>=0;)r^=n<<i(r)-i(n);return t<<12|r},o.getPatternPosition=function(t){return r[t-1]},o.getMaskFunction=function(t){switch(t){case l:return function(t,r){return(t+r)%2==0};case h:return function(t,r){return t%2==0};case s:return function(t,r){return r%3==0};case v:return function(t,r){return(t+r)%3==0};case d:return function(t,r){return(Math.floor(t/2)+Math.floor(r/3))%2==0};case w:return function(t,r){return t*r%2+t*r%3==0};case p:return function(t,r){return(t*r%2+t*r%3)%2==0};case y:return function(t,r){return(t*r%3+(t+r)%2)%2==0};default:throw"bad maskPattern:"+t}},o.getErrorCorrectPolynomial=function(t){for(var r=k([1],0),e=0;e<t;e+=1)r=r.multiply(k([1,C.gexp(e)],0));return r},o.getLengthInBits=function(t,r){if(1<=r&&r<10)switch(t){case a:return 10;case u:return 9;case f:case c:return 8;default:throw"mode:"+t}else if(r<27)switch(t){case a:return 12;case u:return 11;case f:return 16;case c:return 10;default:throw"mode:"+t}else{if(!(r<41))throw"type:"+r;switch(t){case a:return 14;case u:return 13;case f:return 16;case c:return 12;default:throw"mode:"+t}}},o.getLostPoint=function(t){for(var r=t.getModuleCount(),e=0,n=0;n<r;n+=1)for(var o=0;o<r;o+=1){for(var i=0,a=t.isDark(n,o),u=-1;u<=1;u+=1)if(!(n+u<0||r<=n+u))for(var f=-1;f<=1;f+=1)o+f<0||r<=o+f||0==u&&0==f||a==t.isDark(n+u,o+f)&&(i+=1);i>5&&(e+=3+i-5)}for(n=0;n<r-1;n+=1)for(o=0;o<r-1;o+=1){var c=0;t.isDark(n,o)&&(c+=1),t.isDark(n+1,o)&&(c+=1),t.isDark(n,o+1)&&(c+=1),t.isDark(n+1,o+1)&&(c+=1),0!=c&&4!=c||(e+=3)}for(n=0;n<r;n+=1)for(o=0;o<r-6;o+=1)t.isDark(n,o)&&!t.isDark(n,o+1)&&t.isDark(n,o+2)&&t.isDark(n,o+3)&&t.isDark(n,o+4)&&!t.isDark(n,o+5)&&t.isDark(n,o+6)&&(e+=40);for(o=0;o<r;o+=1)for(n=0;n<r-6;n+=1)t.isDark(n,o)&&!t.isDark(n+1,o)&&t.isDark(n+2,o)&&t.isDark(n+3,o)&&t.isDark(n+4,o)&&!t.isDark(n+5,o)&&t.isDark(n+6,o)&&(e+=40);var g=0;for(o=0;o<r;o+=1)for(n=0;n<r;n+=1)t.isDark(n,o)&&(g+=1);return e+=Math.abs(100*g/r/r-50)/5*10},o),C=function(){for(var t=new Array(256),r=new Array(256),e=0;e<8;e+=1)t[e]=1<<e;for(e=8;e<256;e+=1)t[e]=t[e-4]^t[e-5]^t[e-6]^t[e-8];for(e=0;e<255;e+=1)r[t[e]]=e;var n={glog:function(t){if(t<1)throw"glog("+t+")";return r[t]},gexp:function(r){for(;r<0;)r+=255;for(;r>=256;)r-=255;return t[r]}};return n}();function k(t,r){if(void 0===t.length)throw t.length+"/"+r;var e=function(){for(var e=0;e<t.length&&0==t[e];)e+=1;for(var n=new Array(t.length-e+r),o=0;o<t.length-e;o+=1)n[o]=t[o+e];return n}(),n={getAt:function(t){return e[t]},getLength:function(){return e.length},multiply:function(t){for(var r=new Array(n.getLength()+t.getLength()-1),e=0;e<n.getLength();e+=1)for(var o=0;o<t.getLength();o+=1)r[e+o]^=C.gexp(C.glog(n.getAt(e))+C.glog(t.getAt(o)));return k(r,0)},mod:function(t){if(n.getLength()-t.getLength()<0)return n;for(var r=C.glog(n.getAt(0))-C.glog(t.getAt(0)),e=new Array(n.getLength()),o=0;o<n.getLength();o+=1)e[o]=n.getAt(o);for(o=0;o<t.getLength();o+=1)e[o]^=C.gexp(C.glog(t.getAt(o))+r);return k(e,0).mod(t)}};return n}var A=function(){var t=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],r=function(t,r){var e={};return e.totalCount=t,e.dataCount=r,e},e={};return e.getRSBlocks=function(e,n){var o=function(r,e){switch(e){case g.L:return t[4*(r-1)+0];case g.M:return t[4*(r-1)+1];case g.Q:return t[4*(r-1)+2];case g.H:return t[4*(r-1)+3];default:return}}(e,n);if(void 0===o)throw"bad rs block @ typeNumber:"+e+"/errorCorrectionLevel:"+n;for(var i=o.length/3,a=[],u=0;u<i;u+=1)for(var f=o[3*u+0],c=o[3*u+1],l=o[3*u+2],h=0;h<f;h+=1)a.push(r(c,l));return a},e}(),b=function(){var t=[],r=0,e={getBuffer:function(){return t},getAt:function(r){var e=Math.floor(r/8);return 1==(t[e]>>>7-r%8&1)},put:function(t,r){for(var n=0;n<r;n+=1)e.putBit(1==(t>>>r-n-1&1))},getLengthInBits:function(){return r},putBit:function(e){var n=Math.floor(r/8);t.length<=n&&t.push(0),e&&(t[n]|=128>>>r%8),r+=1}};return e},M=function(t){var r=a,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+2<r.length;)t.put(o(r.substring(n,n+3)),10),n+=3;n<r.length&&(r.length-n==1?t.put(o(r.substring(n,n+1)),4):r.length-n==2&&t.put(o(r.substring(n,n+2)),7))}},o=function(t){for(var r=0,e=0;e<t.length;e+=1)r=10*r+i(t.charAt(e));return r},i=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);throw"illegal char :"+t};return n},x=function(t){var r=u,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+1<r.length;)t.put(45*o(r.charAt(n))+o(r.charAt(n+1)),11),n+=2;n<r.length&&t.put(o(r.charAt(n)),6)}},o=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);if("A"<=t&&t<="Z")return t.charCodeAt(0)-"A".charCodeAt(0)+10;switch(t){case" ":return 36;case"$":return 37;case"%":return 38;case"*":return 39;case"+":return 40;case"-":return 41;case".":return 42;case"/":return 43;case":":return 44;default:throw"illegal char :"+t}};return n},m=function(r){var e=f,n=t.stringToBytes(r),o={getMode:function(){return e},getLength:function(t){return n.length},write:function(t){for(var r=0;r<n.length;r+=1)t.put(n[r],8)}};return o},L=function(r){var e=c,n=t.stringToBytesFuncs.SJIS;if(!n)throw"sjis not supported.";!function(){var t=n("友");if(2!=t.length||38726!=(t[0]<<8|t[1]))throw"sjis not supported."}();var o=n(r),i={getMode:function(){return e},getLength:function(t){return~~(o.length/2)},write:function(t){for(var r=o,e=0;e+1<r.length;){var n=(255&r[e])<<8|255&r[e+1];if(33088<=n&&n<=40956)n-=33088;else{if(!(57408<=n&&n<=60351))throw"illegal char at "+(e+1)+"/"+n;n-=49472}n=192*(n>>>8&255)+(255&n),t.put(n,13),e+=2}if(e<r.length)throw"illegal char at "+(e+1)}};return i},D=function(){var t=[],r={writeByte:function(r){t.push(255&r)},writeShort:function(t){r.writeByte(t),r.writeByte(t>>>8)},writeBytes:function(t,e,n){e=e||0,n=n||t.length;for(var o=0;o<n;o+=1)r.writeByte(t[o+e])},writeString:function(t){for(var e=0;e<t.length;e+=1)r.writeByte(t.charCodeAt(e))},toByteArray:function(){return t},toString:function(){var r="";r+="[";for(var e=0;e<t.length;e+=1)e>0&&(r+=","),r+=t[e];return r+="]"}};return r},S=function(t){var r=t,e=0,n=0,o=0,i={read:function(){for(;o<8;){if(e>=r.length){if(0==o)return-1;throw"unexpected end of file./"+o}var t=r.charAt(e);if(e+=1,"="==t)return o=0,-1;t.match(/^\s$/)||(n=n<<6|a(t.charCodeAt(0)),o+=6)}var i=n>>>o-8&255;return o-=8,i}},a=function(t){if(65<=t&&t<=90)return t-65;if(97<=t&&t<=122)return t-97+26;if(48<=t&&t<=57)return t-48+52;if(43==t)return 62;if(47==t)return 63;throw"c:"+t};return i},I=function(t,r,e){for(var n=function(t,r){var e=t,n=r,o=new Array(t*r),i={setPixel:function(t,r,n){o[r*e+t]=n},write:function(t){t.writeString("GIF87a"),t.writeShort(e),t.writeShort(n),t.writeByte(128),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(255),t.writeByte(255),t.writeByte(255),t.writeString(","),t.writeShort(0),t.writeShort(0),t.writeShort(e),t.writeShort(n),t.writeByte(0);var r=a(2);t.writeByte(2);for(var o=0;r.length-o>255;)t.writeByte(255),t.writeBytes(r,o,255),o+=255;t.writeByte(r.length-o),t.writeBytes(r,o,r.length-o),t.writeByte(0),t.writeString(";")}},a=function(t){for(var r=1<<t,e=1+(1<<t),n=t+1,i=u(),a=0;a<r;a+=1)i.add(String.fromCharCode(a));i.add(String.fromCharCode(r)),i.add(String.fromCharCode(e));var f,c,g,l=D(),h=(f=l,c=0,g=0,{write:function(t,r){if(t>>>r!=0)throw"length over";for(;c+r>=8;)f.writeByte(255&(t<<c|g)),r-=8-c,t>>>=8-c,g=0,c=0;g|=t<<c,c+=r},flush:function(){c>0&&f.writeByte(g)}});h.write(r,n);var s=0,v=String.fromCharCode(o[s]);for(s+=1;s<o.length;){var d=String.fromCharCode(o[s]);s+=1,i.contains(v+d)?v+=d:(h.write(i.indexOf(v),n),i.size()<4095&&(i.size()==1<<n&&(n+=1),i.add(v+d)),v=d)}return h.write(i.indexOf(v),n),h.write(e,n),h.flush(),l.toByteArray()},u=function(){var t={},r=0,e={add:function(n){if(e.contains(n))throw"dup key:"+n;t[n]=r,r+=1},size:function(){return r},indexOf:function(r){return t[r]},contains:function(r){return void 0!==t[r]}};return e};return i}(t,r),o=0;o<r;o+=1)for(var i=0;i<t;i+=1)n.setPixel(i,o,e(i,o));var a=D();n.write(a);for(var u=function(){var t=0,r=0,e=0,n="",o={},i=function(t){n+=String.fromCharCode(a(63&t))},a=function(t){if(t<0);else{if(t<26)return 65+t;if(t<52)return t-26+97;if(t<62)return t-52+48;if(62==t)return 43;if(63==t)return 47}throw"n:"+t};return o.writeByte=function(n){for(t=t<<8|255&n,r+=8,e+=1;r>=6;)i(t>>>r-6),r-=6},o.flush=function(){if(r>0&&(i(t<<6-r),t=0,r=0),e%3!=0)for(var o=3-e%3,a=0;a<o;a+=1)n+="="},o.toString=function(){return n},o}(),f=a.toByteArray(),c=0;c<f.length;c+=1)u.writeByte(f[c]);return u.flush(),"data:image/gif;base64,"+u};return t}();qrcode.stringToBytesFuncs["UTF-8"]=function(t){return function(t){for(var r=[],e=0;e<t.length;e++){var n=t.charCodeAt(e);n<128?r.push(n):n<2048?r.push(192|n>>6,128|63&n):n<55296||n>=57344?r.push(224|n>>12,128|n>>6&63,128|63&n):(e++,n=65536+((1023&n)<<10|1023&t.charCodeAt(e)),r.push(240|n>>18,128|n>>12&63,128|n>>6&63,128|63&n))}return r}(t)},function(t){"function"==typeof define&&define.amd?define([],t):"object"==typeof exports&&(module.exports=t())}((function(){return qrcode}));
+//# sourceMappingURL=/sm/26b4b0d0b1e283d6b3ec9857ac597d7a60c76ac17be1ef4c965f03086de426bb.map
+</script>
+<script>
+(() => {
+'use strict';
+
+/* ============================================================
+   Stever QR Studio — générateur de QR codes personnalisables
+   Application 100 % locale, sans dépendance réseau.
+   © 2026 ING STEVER — Tous droits réservés.
+   ============================================================ */
+
+const STORAGE_KEY = 'qr-studio.v1';
+const FONT_STACK = '"Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif';
+const MAX_LOGO_BYTES = 2 * 1024 * 1024;
+
+const $ = (selector, root = document) => root.querySelector(selector);
+const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+const clone = obj => JSON.parse(JSON.stringify(obj));
+const randomItem = list => list[Math.floor(Math.random() * list.length)];
+
+function escapeHtml(value){
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[ch]));
+}
+
+function normalizeHex(value){
+  let hex = String(value ?? '').trim().replace(/^#/, '');
+  if (/^[0-9a-f]{3}$/i.test(hex)) hex = hex.split('').map(ch => ch + ch).join('');
+  if (/^[0-9a-f]{6}$/i.test(hex)) return '#' + hex.toLowerCase();
+  return null;
+}
+
+const ICONS = {
+  eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>',
+  eyeOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 3 18 18"/><path d="M10.6 5.2A11 11 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4.2"/><path d="M6.6 6.7C3.7 8.7 2 12 2 12s3.5 7 10 7a10 10 0 0 0 4-.8"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>',
+  pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>',
+  alert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.9 18a2 2 0 0 0 1.7 3h16.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>'
+};
+
+const TYPES = {
+  text: {
+    label: 'Texte',
+    icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h12M4 18h8"/></svg>'
+  },
+  url: {
+    label: 'Lien',
+    icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7.1l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7.1l1.7-1.7"/></svg>'
+  },
+  wifi: {
+    label: 'Wi-Fi',
+    icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6a11 11 0 0 1 14 0"/><path d="M1.5 9a16 16 0 0 1 21 0"/><path d="M8.5 16.1a6 6 0 0 1 7 0"/><path d="M12 20h.01"/></svg>'
+  },
+  vcard: {
+    label: 'Contact',
+    icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
+  },
+  email: {
+    label: 'E-mail',
+    icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m2.5 7 8.2 6a2 2 0 0 0 2.6 0l8.2-6"/></svg>'
+  },
+  sms: {
+    label: 'SMS',
+    icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a3 3 0 0 1-3 3H8l-5 4V6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3Z"/><path d="M8 10h8M8 13h5"/></svg>'
+  },
+  tel: {
+    label: 'Téléphone',
+    icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7 12.8 12.8 0 0 0 .7 2.8 2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5 12.8 12.8 0 0 0 2.8.7 2 2 0 0 1 1.8 2.1Z"/></svg>'
+  },
+  geo: {
+    label: 'GPS',
+    icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>'
+  }
+};
+
+const MODULE_SHAPES = [
+  { id: 'square', label: 'Carré' },
+  { id: 'rounded', label: 'Arrondi' },
+  { id: 'dots', label: 'Points' },
+  { id: 'diamond', label: 'Diamant' },
+  { id: 'leaf', label: 'Feuille' }
+];
+
+const EYE_SHAPES = [
+  { id: 'square', label: 'Carrés' },
+  { id: 'rounded', label: 'Arrondis' },
+  { id: 'circle', label: 'Ronds' },
+  { id: 'leaf', label: 'Feuilles' }
+];
+
+const PALETTES = [
+  { name: 'Nébuleuse', fg1: '#7c3aed', fg2: '#0891b2', bg: '#ffffff', bg2: '#eef2ff' },
+  { name: 'Coucher de soleil', fg1: '#ea580c', fg2: '#db2777', bg: '#fffbf5', bg2: '#ffe4e6' },
+  { name: 'Océan', fg1: '#0369a1', fg2: '#0f766e', bg: '#f0fdfa', bg2: '#e0f2fe' },
+  { name: 'Forêt', fg1: '#15803d', fg2: '#4d7c0f', bg: '#f7fee7', bg2: '#ecfccb' },
+  { name: 'Bonbon', fg1: '#db2777', fg2: '#8b5cf6', bg: '#fdf2f8', bg2: '#fae8ff' },
+  { name: 'Or', fg1: '#92400e', fg2: '#b45309', bg: '#fffbeb', bg2: '#fef3c7' },
+  { name: 'Graphite', fg1: '#0f172a', fg2: '#475569', bg: '#f8fafc', bg2: '#e2e8f0' },
+  { name: 'Corail', fg1: '#9f1239', fg2: '#e11d48', bg: '#fff1f2', bg2: '#ffe4e6' }
+];
+
+const DEFAULT_FIELDS = {
+  text: { value: 'Bienvenue sur Stever QR Studio ✨\nCréez un QR code à votre image en quelques secondes.' },
+  url: { url: 'https://exemple.fr' },
+  wifi: { ssid: 'Mon réseau', password: '', security: 'WPA', hidden: false },
+  vcard: {
+    first: 'Alex', last: 'Martin', org: 'Studio Créatif', role: 'Designer',
+    phone: '+33 6 12 34 56 78', email: 'alex@exemple.fr',
+    website: 'https://exemple.fr', address: '12 rue des Lilas, 75000 Paris'
+  },
+  email: { to: 'bonjour@exemple.fr', subject: 'Bonjour', body: '' },
+  sms: { number: '+33 6 12 34 56 78', message: 'Bonjour !' },
+  tel: { number: '+33 6 12 34 56 78' },
+  geo: { lat: '48.8566', lng: '2.3522' }
+};
+
+const DEFAULT_DESIGN = {
+  size: 1024,
+  margin: 4,
+  ecc: 'H',
+  moduleShape: 'rounded',
+  eyeShape: 'rounded',
+  fgMode: 'linear',
+  fg1: '#7c3aed',
+  fg2: '#0891b2',
+  fgAngle: 45,
+  bgMode: 'solid',
+  bg1: '#ffffff',
+  bg2: '#e0f2fe',
+  bgAngle: 135,
+  bgTransparent: false,
+  eyeCustom: false,
+  eyeColor: '#0f172a',
+  logo: null,
+  logoName: '',
+  logoSize: 21,
+  logoPad: 12,
+  logoRound: true,
+  caption: 'Scannez-moi',
+  captionColor: '#0b1220',
+  captionSize: 4.2
+};
+
+const state = {
+  type: 'url',
+  fields: clone(DEFAULT_FIELDS),
+  design: clone(DEFAULT_DESIGN)
+};
+
+const VALUE_FORMATS = {
+  size: value => `${value} px`,
+  margin: value => `${value} module${Number(value) > 1 ? 's' : ''}`,
+  fgAngle: value => `${value}°`,
+  bgAngle: value => `${value}°`,
+  logoSize: value => `${value} %`,
+  logoPad: value => `${value} %`,
+  captionSize: value => `${Number(value).toFixed(1).replace('.', ',')} %`
+};
+
+function loadState(){
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    if (saved.type && TYPES[saved.type]) state.type = saved.type;
+    if (saved.fields && typeof saved.fields === 'object'){
+      for (const type of Object.keys(DEFAULT_FIELDS)){
+        if (!saved.fields[type] || typeof saved.fields[type] !== 'object') continue;
+        for (const key of Object.keys(DEFAULT_FIELDS[type])){
+          if (Object.prototype.hasOwnProperty.call(saved.fields[type], key)){
+            state.fields[type][key] = saved.fields[type][key];
+          }
+        }
+      }
+    }
+    if (saved.design && typeof saved.design === 'object'){
+      for (const key of Object.keys(DEFAULT_DESIGN)){
+        if (Object.prototype.hasOwnProperty.call(saved.design, key)) state.design[key] = saved.design[key];
+      }
+    }
+    sanitizeState();
+  } catch (error){
+    /* Le stockage local peut être indisponible (mode privé, quotas…). */
+  }
+}
+
+function sanitizeState(){
+  if (!TYPES[state.type]) state.type = 'url';
+
+  for (const type of Object.keys(DEFAULT_FIELDS)){
+    const defaults = DEFAULT_FIELDS[type];
+    const fields = state.fields[type];
+    if (!fields || typeof fields !== 'object') state.fields[type] = clone(defaults);
+    for (const key of Object.keys(defaults)){
+      if (typeof defaults[key] === 'boolean'){
+        state.fields[type][key] = Boolean(state.fields[type][key]);
+      } else {
+        state.fields[type][key] = String(state.fields[type][key] ?? defaults[key]).slice(0, 3000);
+      }
+    }
+  }
+
+  state.fields.wifi.security = ['WPA', 'WEP', 'nopass'].includes(state.fields.wifi.security)
+    ? state.fields.wifi.security
+    : 'WPA';
+
+  const d = state.design;
+  d.size = clamp(Math.round(Number(d.size) || DEFAULT_DESIGN.size), 256, 2048);
+  d.margin = clamp(Math.round(Number(d.margin) || 0), 0, 12);
+  d.fgAngle = clamp(Math.round(Number(d.fgAngle) || 0), 0, 360);
+  d.bgAngle = clamp(Math.round(Number(d.bgAngle) || 0), 0, 360);
+  d.logoSize = clamp(Math.round(Number(d.logoSize) || DEFAULT_DESIGN.logoSize), 10, 30);
+  d.logoPad = clamp(Math.round(Number(d.logoPad) || 0), 0, 30);
+  d.captionSize = clamp(Number(d.captionSize) || DEFAULT_DESIGN.captionSize, 2, 6);
+
+  if (!['L', 'M', 'Q', 'H'].includes(d.ecc)) d.ecc = 'H';
+  if (!MODULE_SHAPES.some(shape => shape.id === d.moduleShape)) d.moduleShape = 'rounded';
+  if (!EYE_SHAPES.some(shape => shape.id === d.eyeShape)) d.eyeShape = 'rounded';
+  if (!['solid', 'linear', 'radial'].includes(d.fgMode)) d.fgMode = 'linear';
+  if (!['solid', 'linear', 'radial'].includes(d.bgMode)) d.bgMode = 'solid';
+
+  for (const key of ['fg1', 'fg2', 'bg1', 'bg2', 'eyeColor', 'captionColor']){
+    d[key] = normalizeHex(d[key]) || DEFAULT_DESIGN[key];
+  }
+
+  d.bgTransparent = Boolean(d.bgTransparent);
+  d.eyeCustom = Boolean(d.eyeCustom);
+  d.logoRound = Boolean(d.logoRound);
+  d.logo = typeof d.logo === 'string' && d.logo.startsWith('data:image/') ? d.logo : null;
+  d.logoName = typeof d.logoName === 'string' ? d.logoName.slice(0, 120) : '';
+  d.caption = typeof d.caption === 'string' ? d.caption.slice(0, 40) : '';
+}
+
+let saveTimer = 0;
+function persist(){
+  window.clearTimeout(saveTimer);
+  saveTimer = window.setTimeout(() => {
+    const payload = JSON.stringify({ type: state.type, fields: state.fields, design: state.design });
+    try {
+      localStorage.setItem(STORAGE_KEY, payload);
+    } catch (error){
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          type: state.type,
+          fields: state.fields,
+          design: { ...state.design, logo: null, logoName: '' }
+        }));
+      } catch (_) { /* stockage saturé ou désactivé */ }
+    }
+  }, 250);
+}
+
+let toastTimer = 0;
+function toast(message, isError = false){
+  const el = $('#toast');
+  if (!el) return;
+  el.textContent = message;
+  el.classList.toggle('error', isError);
+  el.classList.add('show');
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+/* ------------------------- Champs de formulaire ------------------------- */
+
+function fieldHtml(label, key, options = {}){
+  const type = options.type || 'text';
+  const hint = options.hint ? `<em class="hint">${options.hint}</em>` : '';
+  const attrs = [
+    `type="${type}"`,
+    `data-field="${key}"`,
+    `value="${escapeHtml(options.value ?? '')}"`,
+    `placeholder="${escapeHtml(options.placeholder ?? '')}"`,
+    `autocomplete="${options.autocomplete || 'off'}"`
+  ];
+  if (options.inputmode) attrs.push(`inputmode="${options.inputmode}"`);
+  if (options.min !== undefined) attrs.push(`min="${options.min}"`);
+  if (options.max !== undefined) attrs.push(`max="${options.max}"`);
+  if (options.step !== undefined) attrs.push(`step="${options.step}"`);
+  return `<label class="field"><span>${label}</span><input ${attrs.join(' ')}>${hint}</label>`;
+}
+
+function textareaHtml(label, key, options = {}){
+  return `<label class="field"><span>${label}</span><textarea data-field="${key}" rows="${options.rows || 4}" maxlength="${options.maxlength || 1500}" placeholder="${escapeHtml(options.placeholder || '')}">${escapeHtml(options.value || '')}</textarea>${options.hint ? `<em class="hint">${options.hint}</em>` : ''}</label>`;
+}
+
+function switchFieldHtml(label, key, checked, description = ''){
+  return `<label class="switch-line"><span><strong>${label}</strong>${description ? `<small>${description}</small>` : ''}</span><span class="switch"><input type="checkbox" data-field="${key}" ${checked ? 'checked' : ''}><span class="track"></span></span></label>`;
+}
+
+function buildForms(){
+  const f = state.fields;
+  const security = f.wifi.security;
+  const options = [
+    ['WPA', 'WPA / WPA2 / WPA3'],
+    ['WEP', 'WEP'],
+    ['nopass', 'Aucune']
+  ].map(([value, label]) => `<option value="${value}" ${security === value ? 'selected' : ''}>${label}</option>`).join('');
+
+  $('#typeForms').innerHTML = `
+    <div class="type-form" data-type="text">
+      <label class="field">
+        <span>Texte à encoder</span>
+        <textarea data-field="value" rows="5" maxlength="1500" placeholder="Écrivez votre message…">${escapeHtml(f.text.value)}</textarea>
+        <em class="hint">Accents, emojis et sauts de ligne sont pris en charge.</em>
+      </label>
+    </div>
+
+    <div class="type-form" data-type="url">
+      ${fieldHtml('Lien ou site web', 'url', {
+        type: 'url', value: f.url.url, placeholder: 'https://exemple.fr',
+        hint: 'Le préfixe https:// est ajouté automatiquement si vous l’omettez.'
+      })}
+    </div>
+
+    <div class="type-form" data-type="wifi">
+      <div class="field-row">
+        ${fieldHtml('Nom du réseau (SSID)', 'ssid', { value: f.wifi.ssid, placeholder: 'MonWiFi' })}
+        <label class="field"><span>Sécurité</span><select data-field="security">${options}</select></label>
+      </div>
+      <label class="field">
+        <span>Mot de passe</span>
+        <div class="input-wrap">
+          <input type="password" data-field="password" value="${escapeHtml(f.wifi.password)}" placeholder="••••••••" autocomplete="off">
+          <button type="button" class="input-action" data-reveal aria-label="Afficher le mot de passe">${ICONS.eye}</button>
+        </div>
+        <em class="hint">Laissez vide pour un réseau ouvert ou invité.</em>
+      </label>
+      ${switchFieldHtml('Réseau masqué', 'hidden', f.wifi.hidden, 'Le SSID n’est pas diffusé publiquement.')}
+    </div>
+
+    <div class="type-form" data-type="vcard">
+      <div class="field-row">
+        ${fieldHtml('Prénom', 'first', { value: f.vcard.first, placeholder: 'Alex' })}
+        ${fieldHtml('Nom', 'last', { value: f.vcard.last, placeholder: 'Martin' })}
+      </div>
+      <div class="field-row">
+        ${fieldHtml('Société', 'org', { value: f.vcard.org, placeholder: 'Studio Créatif' })}
+        ${fieldHtml('Fonction', 'role', { value: f.vcard.role, placeholder: 'Designer' })}
+      </div>
+      <div class="field-row">
+        ${fieldHtml('Téléphone', 'phone', { type: 'tel', value: f.vcard.phone, placeholder: '+33 6 12 34 56 78' })}
+        ${fieldHtml('E-mail', 'email', { type: 'email', value: f.vcard.email, placeholder: 'alex@exemple.fr' })}
+      </div>
+      ${fieldHtml('Site web', 'website', { type: 'url', value: f.vcard.website, placeholder: 'https://exemple.fr' })}
+      ${fieldHtml('Adresse', 'address', { value: f.vcard.address, placeholder: '12 rue des Lilas, 75000 Paris' })}
+      <em class="hint">Carte de visite vCard 3.0 — compatible avec la plupart des téléphones.</em>
+    </div>
+
+    <div class="type-form" data-type="email">
+      ${fieldHtml('Destinataire', 'to', { type: 'email', value: f.email.to, placeholder: 'bonjour@exemple.fr' })}
+      ${fieldHtml('Objet', 'subject', { value: f.email.subject, placeholder: 'Bonjour' })}
+      ${textareaHtml('Message', 'body', { value: f.email.body, rows: 3, placeholder: 'Votre message…' })}
+    </div>
+
+    <div class="type-form" data-type="sms">
+      ${fieldHtml('Numéro de téléphone', 'number', { type: 'tel', value: f.sms.number, placeholder: '+33 6 12 34 56 78' })}
+      ${textareaHtml('Message', 'message', { value: f.sms.message, rows: 3, maxlength: 500, placeholder: 'Votre message…' })}
+    </div>
+
+    <div class="type-form" data-type="tel">
+      ${fieldHtml('Numéro à appeler', 'number', { type: 'tel', value: f.tel.number, placeholder: '+33 6 12 34 56 78', hint: 'Les espaces sont retirés du numéro final.' })}
+    </div>
+
+    <div class="type-form" data-type="geo">
+      <div class="field-row">
+        ${fieldHtml('Latitude', 'lat', { type: 'number', value: f.geo.lat, placeholder: '48.8566', step: 'any', inputmode: 'decimal' })}
+        ${fieldHtml('Longitude', 'lng', { type: 'number', value: f.geo.lng, placeholder: '2.3522', step: 'any', inputmode: 'decimal' })}
+      </div>
+      <button type="button" class="ghost-mini" data-action="geolocate">${ICONS.pin} Utiliser ma position actuelle</button>
+      <em class="hint">Ouvre l’emplacement dans l’application de cartes du téléphone.</em>
+    </div>
+  `;
+}
+
+/* ------------------------------ Interface ------------------------------ */
+
+function buildTypeGrid(){
+  $('#typeGrid').innerHTML = Object.entries(TYPES).map(([id, type]) => `
+    <button type="button" class="type-btn" data-type="${id}" aria-pressed="false" title="${type.label}">
+      ${type.icon}
+      <span>${type.label}</span>
+    </button>
+  `).join('');
+}
+
+function buildShapeGrids(){
+  $('#moduleShapes').innerHTML = MODULE_SHAPES.map(shape => `
+    <button type="button" class="shape-btn" data-set="moduleShape" data-value="${shape.id}" aria-pressed="false" title="Modules ${shape.label.toLowerCase()}">
+      ${moduleIcon(shape.id)}
+      <span>${shape.label}</span>
+    </button>
+  `).join('');
+
+  $('#eyeShapes').innerHTML = EYE_SHAPES.map(shape => `
+    <button type="button" class="shape-btn" data-set="eyeShape" data-value="${shape.id}" aria-pressed="false" title="Yeux ${shape.label.toLowerCase()}">
+      ${eyeIcon(shape.id)}
+      <span>${shape.label}</span>
+    </button>
+  `).join('');
+}
+
+function buildPresets(){
+  $('#presets').innerHTML = PALETTES.map((palette, index) => `
+    <button type="button" class="preset" data-preset="${index}"
+      style="--a:${palette.fg1};--b:${palette.fg2};--bgc:${palette.bg}"
+      title="${palette.name}" aria-label="Palette ${palette.name}" aria-pressed="false"></button>
+  `).join('');
+}
+
+function updateTypeUI(){
+  $$('.type-btn').forEach(button => {
+    const active = button.dataset.type === state.type;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+  $$('.type-form').forEach(form => {
+    form.classList.toggle('active', form.dataset.type === state.type);
+  });
+  const previewType = $('#previewType');
+  if (previewType) previewType.textContent = TYPES[state.type].label;
+}
+
+function updateRangeFill(input){
+  const min = Number(input.min) || 0;
+  const max = Number(input.max) || 100;
+  const value = Number(input.value) || 0;
+  const percent = max === min ? 0 : ((value - min) / (max - min)) * 100;
+  input.style.setProperty('--p', clamp(percent, 0, 100) + '%');
+}
+
+function formatValue(key, value){
+  const formatter = VALUE_FORMATS[key];
+  return formatter ? formatter(value) : String(value);
+}
+
+function updateReadout(key){
+  $$(`[data-show="${key}"]`).forEach(element => {
+    element.textContent = formatValue(key, state.design[key]);
+  });
+}
+
+function syncPaintIndicators(){
+  const d = state.design;
+  const fg = $('#fgMini');
+  const bg = $('#bgMini');
+  if (fg){
+    fg.style.background = d.fgMode === 'solid'
+      ? d.fg1
+      : `linear-gradient(135deg, ${d.fg1}, ${d.fg2})`;
+  }
+  if (bg){
+    if (d.bgTransparent){
+      bg.style.background = 'repeating-conic-gradient(#64748b 0 25%, #e2e8f0 0 50%) 50% / 8px 8px';
+    } else if (d.bgMode === 'solid'){
+      bg.style.background = d.bg1;
+    } else {
+      bg.style.background = `linear-gradient(135deg, ${d.bg1}, ${d.bg2})`;
+    }
+  }
+}
+
+function syncPaletteStates(){
+  const d = state.design;
+  $$('[data-preset]').forEach((button, index) => {
+    const palette = PALETTES[index];
+    if (!palette) return;
+    const active = palette.fg1 === d.fg1 && palette.fg2 === d.fg2 &&
+      palette.bg === d.bg1 && palette.bg2 === d.bg2;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+}
+
+function syncUI(force = false){
+  const d = state.design;
+
+  $$('[data-set]').forEach(button => {
+    const key = button.dataset.set;
+    const active = String(d[key]) === String(button.dataset.value);
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+
+  $$('[data-design]').forEach(input => {
+    const key = input.dataset.design;
+    if (!(key in d)) return;
+    if (input.type === 'checkbox'){
+      input.checked = Boolean(d[key]);
+    } else if (input.type === 'range' || force || document.activeElement !== input){
+      input.value = d[key];
+    }
+    if (input.type === 'range') updateRangeFill(input);
+  });
+
+  $$('[data-color]').forEach(input => {
+    const key = input.dataset.color;
+    if (key in d && normalizeHex(input.value) !== d[key]) input.value = d[key];
+  });
+
+  $$('[data-hex]').forEach(input => {
+    const key = input.dataset.hex;
+    if (!(key in d)) return;
+    if (force || document.activeElement !== input) input.value = d[key].toUpperCase();
+    input.closest('.color-field')?.classList.remove('invalid');
+  });
+
+  $$('[data-toggle]').forEach(input => {
+    input.checked = Boolean(d[input.dataset.toggle]);
+  });
+
+  $$('[data-show]').forEach(element => {
+    const key = element.dataset.show;
+    if (key in d) element.textContent = formatValue(key, d[key]);
+  });
+
+  $$('[data-design], [data-color]').forEach(input => {
+    if (input.type === 'range') updateRangeFill(input);
+  });
+
+  $$('[data-color-field="fg2"]').forEach(element => {
+    element.hidden = d.fgMode === 'solid';
+  });
+  $$('[data-angle-field="fg"]').forEach(element => {
+    element.hidden = d.fgMode !== 'linear';
+  });
+  $$('[data-color-field="bg1"]').forEach(element => {
+    element.hidden = d.bgTransparent;
+  });
+  $$('[data-color-field="bg2"]').forEach(element => {
+    element.hidden = d.bgTransparent || d.bgMode === 'solid';
+  });
+  $$('[data-angle-field="bg"]').forEach(element => {
+    element.hidden = d.bgTransparent || d.bgMode !== 'linear';
+  });
+  $$('[data-eye-color-field]').forEach(element => {
+    element.hidden = !d.eyeCustom;
+  });
+
+  const logoPanel = $('#logoPanel');
+  if (logoPanel) logoPanel.hidden = !d.logo;
+
+  const logoBox = $('#logoBox');
+  const logoPlaceholder = $('#logoPlaceholder');
+  const logoPreview = $('#logoPreviewImg');
+  const logoTitle = $('#logoTitle');
+  const logoSub = $('#logoSub');
+  const removeLogo = $('#removeLogo');
+  if (logoBox && logoPlaceholder && logoPreview && logoTitle && logoSub && removeLogo){
+    const hasLogo = Boolean(d.logo);
+    logoPlaceholder.hidden = hasLogo;
+    logoPreview.hidden = !hasLogo;
+    removeLogo.hidden = !hasLogo;
+    logoBox.classList.toggle('has-logo', hasLogo);
+    if (hasLogo){
+      if (logoPreview.getAttribute('src') !== d.logo) logoPreview.src = d.logo;
+      logoTitle.textContent = d.logoName || 'Logo ajouté';
+      logoSub.textContent = 'Cliquez pour remplacer';
+    } else {
+      logoPreview.removeAttribute('src');
+      logoTitle.textContent = 'Ajouter un logo';
+      logoSub.textContent = 'PNG, JPG ou SVG · 2 Mo max';
+    }
+  }
+
+  syncPaintIndicators();
+  syncPaletteStates();
+}
+
+/* -------------------------------- Rendu -------------------------------- */
+
+let renderQueued = false;
+function scheduleRender(){
+  if (renderQueued) return;
+  renderQueued = true;
+  window.requestAnimationFrame(() => {
+    renderQueued = false;
+    render();
+  });
+}
+
+/* -------------------------------- Logo --------------------------------- */
+
+let logoImg = null;
+let logoImgSrc = '';
+let logoLoadPromise = Promise.resolve(null);
+
+function ensureLogoLoaded(){
+  const src = state.design.logo;
+  if (!src){
+    logoImg = null;
+    logoImgSrc = '';
+    logoLoadPromise = Promise.resolve(null);
+    return logoLoadPromise;
+  }
+  if (src === logoImgSrc) return logoLoadPromise;
+  logoImgSrc = src;
+  logoImg = null;
+  logoLoadPromise = new Promise(resolve => {
+    const image = new Image();
+    image.onload = () => {
+      if (state.design.logo !== src){
+        resolve(null);
+        return;
+      }
+      logoImg = image;
+      resolve(image);
+      scheduleRender();
+    };
+    image.onerror = () => {
+      if (state.design.logo === src){
+        logoImg = null;
+        toast('Le logo n’a pas pu être chargé.', true);
+      }
+      resolve(null);
+    };
+    image.src = src;
+  });
+  return logoLoadPromise;
+}
+
+function readFileAsDataURL(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(new Error('Lecture impossible'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleLogoFile(file){
+  if (!file) return;
+  if (!file.type || !file.type.startsWith('image/')){
+    toast('Choisissez un fichier image (PNG, JPG, SVG).', true);
+    return;
+  }
+  if (file.size > MAX_LOGO_BYTES){
+    toast('Logo trop lourd : 2 Mo maximum.', true);
+    return;
+  }
+  try {
+    const dataUrl = await readFileAsDataURL(file);
+    if (!dataUrl.startsWith('data:image/')){
+      toast('Ce format d’image n’est pas pris en charge.', true);
+      return;
+    }
+    state.design.logo = dataUrl;
+    state.design.logoName = file.name || 'Logo';
+    logoImg = null;
+    logoImgSrc = '';
+    let message = 'Logo ajouté.';
+    if (state.design.ecc !== 'H'){
+      state.design.ecc = 'H';
+      message = 'Logo ajouté et correction H activée.';
+    }
+    syncUI();
+    ensureLogoLoaded();
+    scheduleRender();
+    persist();
+    toast(message);
+  } catch (error){
+    toast('Impossible de lire cette image.', true);
+  }
+}
+
+/* ------------------------------- Actions ------------------------------- */
+
+function applyPreset(index){
+  const palette = PALETTES[index];
+  if (!palette) return;
+  const d = state.design;
+  d.fg1 = palette.fg1;
+  d.fg2 = palette.fg2;
+  d.bg1 = palette.bg;
+  d.bg2 = palette.bg2;
+  d.fgMode = 'linear';
+  d.bgMode = 'solid';
+  d.bgTransparent = false;
+  syncUI();
+  scheduleRender();
+  persist();
+  toast(`Palette « ${palette.name} » appliquée.`);
+}
+
+function surprise(){
+  const d = state.design;
+  const palette = randomItem(PALETTES);
+  d.fg1 = palette.fg1;
+  d.fg2 = palette.fg2;
+  d.bg1 = palette.bg;
+  d.bg2 = palette.bg2;
+  d.bgMode = 'solid';
+  d.bgTransparent = false;
+  d.fgMode = randomItem(['linear', 'linear', 'linear', 'radial', 'solid']);
+  d.fgAngle = randomItem([0, 45, 90, 135, 180, 225, 270, 315]);
+  d.moduleShape = randomItem(MODULE_SHAPES).id;
+  d.eyeShape = randomItem(EYE_SHAPES).id;
+  d.eyeCustom = false;
+  syncUI();
+  scheduleRender();
+  persist();
+  toast('Un style aléatoire a été appliqué ✨');
+}
+
+function resetAll(){
+  const confirmed = window.confirm('Réinitialiser tous les contenus et réglages ?');
+  if (!confirmed) return;
+  state.type = 'url';
+  state.fields = clone(DEFAULT_FIELDS);
+  state.design = clone(DEFAULT_DESIGN);
+  logoImg = null;
+  logoImgSrc = '';
+  try { localStorage.removeItem(STORAGE_KEY); } catch (error) { /* stockage indisponible */ }
+  buildForms();
+  updateTypeUI();
+  syncUI(true);
+  scheduleRender();
+  persist();
+  toast('Stever QR Studio a été réinitialisé.');
+}
+
+/* ------------------------------ Événements ----------------------------- */
+
+function bindEvents(){
+  $('#typeGrid').addEventListener('click', event => {
+    const button = event.target.closest('.type-btn');
+    if (!button) return;
+    state.type = button.dataset.type;
+    updateTypeUI();
+    render();
+    persist();
+  });
+
+  const forms = $('#typeForms');
+  const handleField = event => {
+    const field = event.target.closest('[data-field]');
+    if (!field) return;
+    state.fields[state.type][field.dataset.field] = field.type === 'checkbox'
+      ? field.checked
+      : field.value;
+    scheduleRender();
+    persist();
+  };
+  forms.addEventListener('input', handleField);
+  forms.addEventListener('change', handleField);
+
+  forms.addEventListener('click', event => {
+    const reveal = event.target.closest('[data-reveal]');
+    if (reveal){
+      const wrap = reveal.closest('.input-wrap');
+      const input = wrap ? wrap.querySelector('input') : null;
+      if (!input) return;
+      const show = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      reveal.innerHTML = show ? ICONS.eyeOff : ICONS.eye;
+      reveal.setAttribute('aria-label', show ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
+      return;
+    }
+
+    const geoButton = event.target.closest('[data-action="geolocate"]');
+    if (geoButton){
+      if (!navigator.geolocation){
+        toast('La géolocalisation n’est pas disponible sur cet appareil.', true);
+        return;
+      }
+      const original = geoButton.innerHTML;
+      geoButton.disabled = true;
+      geoButton.innerHTML = ICONS.pin + ' Localisation…';
+      navigator.geolocation.getCurrentPosition(position => {
+        const lat = position.coords.latitude.toFixed(6);
+        const lng = position.coords.longitude.toFixed(6);
+        state.fields.geo.lat = lat;
+        state.fields.geo.lng = lng;
+        const form = geoButton.closest('.type-form');
+        if (form){
+          const latInput = form.querySelector('[data-field="lat"]');
+          const lngInput = form.querySelector('[data-field="lng"]');
+          if (latInput) latInput.value = lat;
+          if (lngInput) lngInput.value = lng;
+        }
+        geoButton.disabled = false;
+        geoButton.innerHTML = original;
+        scheduleRender();
+        persist();
+        toast('Position actuelle ajoutée.');
+      }, () => {
+        geoButton.disabled = false;
+        geoButton.innerHTML = original;
+        toast('Impossible d’obtenir votre position.', true);
+      }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+    }
+  });
+
+  document.addEventListener('click', event => {
+    const setButton = event.target.closest('[data-set]');
+    if (setButton){
+      const key = setButton.dataset.set;
+      if (key in state.design){
+        state.design[key] = setButton.dataset.value;
+        syncUI();
+        scheduleRender();
+        persist();
+      }
+      return;
+    }
+
+    const presetButton = event.target.closest('[data-preset]');
+    if (presetButton){
+      applyPreset(Number(presetButton.dataset.preset));
+    }
+  });
+
+  document.addEventListener('input', event => {
+    const input = event.target;
+
+    if (input.matches('[data-color]')){
+      const key = input.dataset.color;
+      if (!(key in state.design)) return;
+      state.design[key] = input.value;
+      const hex = $(`[data-hex="${key}"]`);
+      if (hex && document.activeElement !== hex) hex.value = input.value.toUpperCase();
+      syncPaintIndicators();
+      syncPaletteStates();
+      scheduleRender();
+      persist();
+      return;
+    }
+
+    if (input.matches('[data-hex]')){
+      const key = input.dataset.hex;
+      if (!(key in state.design)) return;
+      const value = normalizeHex(input.value);
+      const field = input.closest('.color-field');
+      if (value){
+        field?.classList.remove('invalid');
+        state.design[key] = value;
+        const color = $(`[data-color="${key}"]`);
+        if (color) color.value = value;
+        syncPaintIndicators();
+        syncPaletteStates();
+        scheduleRender();
+        persist();
+      } else if (field){
+        field.classList.toggle('invalid', input.value.trim().length >= 4);
+      }
+      return;
+    }
+
+    if (input.matches('[data-design]')){
+      const key = input.dataset.design;
+      if (!(key in state.design)) return;
+      let value;
+      if (input.type === 'number'){
+        if (input.value.trim() === '') return;
+        value = Number(input.value);
+        if (!Number.isFinite(value)) return;
+        const min = input.min !== '' ? Number(input.min) : -Infinity;
+        const max = input.max !== '' ? Number(input.max) : Infinity;
+        if (value < min || value > max) return;
+      } else if (input.type === 'range'){
+        value = Number(input.value);
+      } else {
+        value = input.value;
+      }
+      state.design[key] = value;
+      if (input.type === 'range' || input.type === 'number'){
+        updateRangeFill(input);
+        $$(`[data-design="${key}"]`).forEach(sibling => {
+          if (sibling === input) return;
+          if (sibling.type === 'number' && document.activeElement === sibling) return;
+          sibling.value = value;
+          if (sibling.type === 'range') updateRangeFill(sibling);
+        });
+      }
+      updateReadout(key);
+      scheduleRender();
+      persist();
+    }
+  });
+
+  document.addEventListener('change', event => {
+    const input = event.target;
+
+    if (input.matches('[data-toggle]')){
+      const key = input.dataset.toggle;
+      if (key in state.design){
+        state.design[key] = input.checked;
+        syncUI();
+        scheduleRender();
+        persist();
+      }
+      return;
+    }
+
+    if (input.matches('[data-design][type="number"]')){
+      const key = input.dataset.design;
+      if (!(key in state.design)) return;
+      const min = input.min !== '' ? Number(input.min) : Number(state.design[key]);
+      const max = input.max !== '' ? Number(input.max) : Number(state.design[key]);
+      const fallback = Number(state.design[key]);
+      const raw = Number(input.value);
+      const value = clamp(Number.isFinite(raw) ? raw : fallback, min, max);
+      state.design[key] = value;
+      input.value = value;
+      $$(`[data-design="${key}"]`).forEach(sibling => {
+        sibling.value = value;
+        if (sibling.type === 'range') updateRangeFill(sibling);
+      });
+      updateReadout(key);
+      scheduleRender();
+      persist();
+    }
+  });
+
+  document.addEventListener('focusin', event => {
+    if (event.target.matches('[data-hex]')) event.target.select();
+  });
+
+  document.addEventListener('focusout', event => {
+    const input = event.target;
+    if (input.matches('[data-hex]')){
+      const key = input.dataset.hex;
+      if (!(key in state.design)) return;
+      const value = normalizeHex(input.value);
+      if (value){
+        input.value = value.toUpperCase();
+        input.closest('.color-field')?.classList.remove('invalid');
+      } else {
+        input.value = state.design[key].toUpperCase();
+        input.closest('.color-field')?.classList.remove('invalid');
+      }
+    }
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Enter' && event.target.matches('[data-hex]')){
+      event.preventDefault();
+      event.target.blur();
+    }
+  });
+
+  $('#randomize').addEventListener('click', surprise);
+  $('#reset').addEventListener('click', resetAll);
+  $('#dlPng').addEventListener('click', downloadPng);
+  $('#dlSvg').addEventListener('click', downloadSvg);
+  $('#copyBtn').addEventListener('click', copyImage);
+
+  const logoBox = $('#logoBox');
+  const logoInput = $('#logoInput');
+  logoBox.addEventListener('click', event => {
+    if (event.target.closest('#removeLogo')) return;
+    logoInput.click();
+  });
+  logoBox.addEventListener('keydown', event => {
+    if (event.key === 'Enter' || event.key === ' '){
+      event.preventDefault();
+      logoInput.click();
+    }
+  });
+  ['dragenter', 'dragover'].forEach(type => {
+    logoBox.addEventListener(type, event => {
+      event.preventDefault();
+      logoBox.classList.add('dragover');
+    });
+  });
+  ['dragleave', 'drop'].forEach(type => {
+    logoBox.addEventListener(type, event => {
+      event.preventDefault();
+      logoBox.classList.remove('dragover');
+    });
+  });
+  logoBox.addEventListener('drop', event => {
+    const file = event.dataTransfer?.files?.[0];
+    if (file) handleLogoFile(file);
+  });
+  logoInput.addEventListener('change', () => {
+    const file = logoInput.files?.[0];
+    if (file) handleLogoFile(file);
+    logoInput.value = '';
+  });
+
+  $('#removeLogo').addEventListener('click', event => {
+    event.stopPropagation();
+    state.design.logo = null;
+    state.design.logoName = '';
+    logoImg = null;
+    logoImgSrc = '';
+    syncUI();
+    scheduleRender();
+    persist();
+    toast('Logo retiré.');
+  });
+}
+
+/* ------------------------------- Contenu ------------------------------- */
+
+const clean = value => String(value ?? '').trim();
+
+function escapeWifi(value){
+  return String(value ?? '').replace(/\\/g, '\\\\').replace(/([;,":])/g, '\\$1');
+}
+
+function escapeVcard(value){
+  return String(value ?? '')
+    .replace(/\\/g, '\\\\')
+    .replace(/\r?\n/g, '\\n')
+    .replace(/;/g, '\\;')
+    .replace(/,/g, '\\,');
+}
+
+function buildPayload(){
+  const f = state.fields;
+
+  switch (state.type){
+    case 'text': {
+      const value = f.text.value;
+      return value.trim() ? value : '';
+    }
+
+    case 'url': {
+      let value = clean(f.url.url);
+      if (!value) return '';
+      if (value.startsWith('//')) value = 'https:' + value;
+      else if (!/^[a-z][a-z0-9+.-]*:/i.test(value)) value = 'https://' + value;
+      return value;
+    }
+
+    case 'wifi': {
+      const ssid = clean(f.wifi.ssid);
+      if (!ssid) return '';
+      const security = f.wifi.security || 'WPA';
+      let payload = `WIFI:T:${security};S:${escapeWifi(ssid)};`;
+      if (security !== 'nopass') payload += `P:${escapeWifi(f.wifi.password || '')};`;
+      if (f.wifi.hidden) payload += 'H:true;';
+      return payload + ';';
+    }
+
+    case 'vcard': {
+      const first = clean(f.vcard.first);
+      const last = clean(f.vcard.last);
+      const org = clean(f.vcard.org);
+      const role = clean(f.vcard.role);
+      const phone = clean(f.vcard.phone);
+      const email = clean(f.vcard.email);
+      const website = clean(f.vcard.website);
+      const address = clean(f.vcard.address);
+      if (!first && !last && !org && !role && !phone && !email) return '';
+
+      const lines = [
+        'BEGIN:VCARD',
+        'VERSION:3.0',
+        `N:${escapeVcard(last)};${escapeVcard(first)};;;`,
+        `FN:${escapeVcard([first, last].filter(Boolean).join(' '))}`
+      ];
+      if (org) lines.push(`ORG:${escapeVcard(org)}`);
+      if (role) lines.push(`TITLE:${escapeVcard(role)}`);
+      if (phone) lines.push(`TEL;TYPE=CELL:${escapeVcard(phone)}`);
+      if (email) lines.push(`EMAIL:${escapeVcard(email)}`);
+      if (website) lines.push(`URL:${escapeVcard(website)}`);
+      if (address) lines.push(`ADR;TYPE=WORK:;;${escapeVcard(address)};;;;`);
+      lines.push('END:VCARD');
+      return lines.join('\r\n');
+    }
+
+    case 'email': {
+      const to = clean(f.email.to);
+      const subject = clean(f.email.subject);
+      const body = clean(f.email.body);
+      if (!to && !subject && !body) return '';
+      const params = [];
+      if (subject) params.push('subject=' + encodeURIComponent(subject));
+      if (body) params.push('body=' + encodeURIComponent(body));
+      return `mailto:${to}${params.length ? '?' + params.join('&') : ''}`;
+    }
+
+    case 'sms': {
+      const number = clean(f.sms.number);
+      if (!number) return '';
+      return `SMSTO:${number}:${f.sms.message || ''}`;
+    }
+
+    case 'tel': {
+      const number = clean(f.tel.number);
+      if (!number) return '';
+      return `tel:${number.replace(/[^\d+*#]/g, '')}`;
+    }
+
+    case 'geo': {
+      const latRaw = clean(f.geo.lat).replace(',', '.');
+      const lngRaw = clean(f.geo.lng).replace(',', '.');
+      if (!latRaw || !lngRaw) return '';
+      const lat = Number(latRaw);
+      const lng = Number(lngRaw);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return '';
+      if (Math.abs(lat) > 90 || Math.abs(lng) > 180) return '';
+      return `geo:${lat},${lng}`;
+    }
+
+    default:
+      return '';
+  }
+}
+
+/* ----------------------------- Moteur QR ------------------------------- */
+
+if (typeof qrcode === 'function' && qrcode.stringToBytesFuncs && qrcode.stringToBytesFuncs['UTF-8']){
+  qrcode.stringToBytes = qrcode.stringToBytesFuncs['UTF-8'];
+}
+
+let qrCacheKey = '';
+let qrCache = null;
+
+function createQR(payload){
+  if (typeof qrcode !== 'function') throw new Error('Moteur QR indisponible');
+  const key = state.design.ecc + '\n' + payload;
+  if (qrCache && qrCacheKey === key) return qrCache;
+  const qr = qrcode(0, state.design.ecc);
+  qr.addData(payload, 'Byte');
+  qr.make();
+  qrCache = qr;
+  qrCacheKey = key;
+  return qr;
+}
+
+/* --------------------------- Formes & chemins --------------------------- */
+
+function fmt(value){
+  const rounded = Math.round(value * 100) / 100;
+  return String(Object.is(rounded, -0) ? 0 : rounded);
+}
+
+function rectPath(x, y, w, h){
+  return `M${fmt(x)} ${fmt(y)}H${fmt(x + w)}V${fmt(y + h)}H${fmt(x)}Z`;
+}
+
+function circlePath(cx, cy, radius){
+  const r = fmt(radius);
+  return `M${fmt(cx - radius)} ${fmt(cy)}a${r} ${r} 0 1 0 ${fmt(radius * 2)} 0a${r} ${r} 0 1 0 ${fmt(-radius * 2)} 0Z`;
+}
+
+function roundedRectPath(x, y, w, h, rtl = 0, rtr = 0, rbr = 0, rbl = 0){
+  const max = Math.min(w, h) / 2;
+  rtl = clamp(rtl, 0, max);
+  rtr = clamp(rtr, 0, max);
+  rbr = clamp(rbr, 0, max);
+  rbl = clamp(rbl, 0, max);
+  let d = `M${fmt(x + rtl)} ${fmt(y)}`;
+  d += `H${fmt(x + w - rtr)}`;
+  d += rtr > 0 ? `Q${fmt(x + w)} ${fmt(y)} ${fmt(x + w)} ${fmt(y + rtr)}` : `L${fmt(x + w)} ${fmt(y)}`;
+  d += `V${fmt(y + h - rbr)}`;
+  d += rbr > 0 ? `Q${fmt(x + w)} ${fmt(y + h)} ${fmt(x + w - rbr)} ${fmt(y + h)}` : `L${fmt(x + w)} ${fmt(y + h)}`;
+  d += `H${fmt(x + rbl)}`;
+  d += rbl > 0 ? `Q${fmt(x)} ${fmt(y + h)} ${fmt(x)} ${fmt(y + h - rbl)}` : `L${fmt(x)} ${fmt(y + h)}`;
+  d += `V${fmt(y + rtl)}`;
+  d += rtl > 0 ? `Q${fmt(x)} ${fmt(y)} ${fmt(x + rtl)} ${fmt(y)}` : `L${fmt(x)} ${fmt(y)}`;
+  return d + 'Z';
+}
+
+function modulePath(x, y, size, shape){
+  switch (shape){
+    case 'rounded':
+      return roundedRectPath(x, y, size, size, size * 0.34, size * 0.34, size * 0.34, size * 0.34);
+    case 'dots':
+      return circlePath(x + size / 2, y + size / 2, size * 0.47);
+    case 'diamond':
+      return `M${fmt(x + size / 2)} ${fmt(y)}L${fmt(x + size)} ${fmt(y + size / 2)}L${fmt(x + size / 2)} ${fmt(y + size)}L${fmt(x)} ${fmt(y + size / 2)}Z`;
+    case 'leaf':
+      return roundedRectPath(x, y, size, size, size * 0.5, 0, size * 0.5, 0);
+    default:
+      return rectPath(x, y, size, size);
+  }
+}
+
+function eyePartPath(x, y, size, style){
+  if (style === 'circle') return circlePath(x + size / 2, y + size / 2, size / 2);
+  if (style === 'square') return rectPath(x, y, size, size);
+  if (style === 'leaf'){
+    return roundedRectPath(x, y, size, size, size * 0.32, 0, size * 0.32, 0);
+  }
+  return roundedRectPath(x, y, size, size, size * 0.22, size * 0.22, size * 0.22, size * 0.22);
+}
+
+function eyePath(x, y, moduleSize, style){
+  return eyePartPath(x, y, moduleSize * 7, style)
+    + eyePartPath(x + moduleSize, y + moduleSize, moduleSize * 5, style)
+    + eyePartPath(x + moduleSize * 2, y + moduleSize * 2, moduleSize * 3, style);
+}
+
+function moduleIcon(shape){
+  const start = 2;
+  const unit = 8;
+  const gap = 2;
+  const cells = [
+    [0, 0], [1, 0], [2, 0],
+    [0, 1], [2, 1],
+    [0, 2], [1, 2], [2, 2]
+  ];
+  let path = '';
+  for (const [column, row] of cells){
+    path += modulePath(start + column * (unit + gap), start + row * (unit + gap), unit, shape);
+  }
+  return `<svg viewBox="0 0 32 32" aria-hidden="true"><path d="${path}" fill="currentColor" fill-rule="evenodd"/></svg>`;
+}
+
+function eyeIcon(shape){
+  return `<svg viewBox="0 0 32 32" aria-hidden="true"><path d="${eyePath(2, 2, 4, shape)}" fill="currentColor" fill-rule="evenodd"/></svg>`;
+}
+
+/* ---------------------------- Géométrie QR ----------------------------- */
+
+const measurementCanvas = document.createElement('canvas');
+const measurementContext = measurementCanvas.getContext('2d');
+
+function fitCaption(text, baseSize, maxWidth){
+  let size = baseSize;
+  const applyFont = () => { measurementContext.font = `600 ${size}px ${FONT_STACK}`; };
+  applyFont();
+  let guard = 0;
+  while (measurementContext.measureText(text).width > maxWidth && size > baseSize * 0.5 && guard < 120){
+    size -= Math.max(0.5, baseSize * 0.02);
+    applyFont();
+    guard += 1;
+  }
+  return Math.round(size * 10) / 10;
+}
+
+function logoGeometry(size){
+  if (!state.design.logo) return null;
+  const box = size * (state.design.logoSize / 100);
+  const padding = Math.min(box * 0.36, box * (state.design.logoPad / 100));
+  const inner = Math.max(1, box - padding * 2);
+  return {
+    x: size / 2 - box / 2,
+    y: size / 2 - box / 2,
+    box,
+    padding,
+    inner,
+    radius: state.design.logoRound ? box * 0.18 : 0,
+    innerRadius: state.design.logoRound ? inner * 0.2 : 0
+  };
+}
+
+function computeInfo(payload, bytes){
+  const design = state.design;
+  const qr = createQR(payload);
+  const count = qr.getModuleCount();
+  const version = (count - 17) / 4;
+  const size = clamp(Math.round(design.size), 256, 2048);
+  const margin = clamp(Math.round(design.margin), 0, 12);
+  const moduleSize = size / (count + margin * 2);
+  const origin = margin * moduleSize;
+  const finderStart = count - 7;
+
+  let bodyPath = '';
+  for (let row = 0; row < count; row += 1){
+    for (let column = 0; column < count; column += 1){
+      const inFinder = (row < 7 && column < 7)
+        || (row < 7 && column >= finderStart)
+        || (row >= finderStart && column < 7);
+      if (!inFinder && qr.isDark(row, column)){
+        bodyPath += modulePath(
+          origin + column * moduleSize,
+          origin + row * moduleSize,
+          moduleSize,
+          design.moduleShape
+        );
+      }
+    }
+  }
+
+  const eyesPath = eyePath(origin, origin, moduleSize, design.eyeShape)
+    + eyePath(origin + finderStart * moduleSize, origin, moduleSize, design.eyeShape)
+    + eyePath(origin, origin + finderStart * moduleSize, moduleSize, design.eyeShape);
+
+  const caption = String(design.caption || '').trim();
+  let capFont = 0;
+  let capH = 0;
+  if (caption){
+    const base = size * (design.captionSize / 100);
+    capFont = fitCaption(caption, base, size * 0.9);
+    capH = Math.max(8, Math.round(capFont * 2));
+  }
+
+  return {
+    payload,
+    bytes,
+    qr,
+    count,
+    version,
+    size,
+    margin,
+    moduleSize,
+    width: size,
+    height: size + capH,
+    bodyPath,
+    eyesPath,
+    caption,
+    capFont,
+    capH,
+    logo: logoGeometry(size)
+  };
+}
+
+/* ------------------------- Couleurs & dégradés ------------------------- */
+
+function gradientPoints(rect, angle){
+  const radians = angle * Math.PI / 180;
+  const dx = Math.cos(radians);
+  const dy = Math.sin(radians);
+  const half = (Math.abs(rect.w * dx) + Math.abs(rect.h * dy)) / 2;
+  const cx = rect.x + rect.w / 2;
+  const cy = rect.y + rect.h / 2;
+  return {
+    x1: cx - dx * half,
+    y1: cy - dy * half,
+    x2: cx + dx * half,
+    y2: cy + dy * half
+  };
+}
+
+function canvasPaint(context, mode, color1, color2, angle, rect){
+  if (mode === 'solid') return color1;
+  if (mode === 'linear'){
+    const points = gradientPoints(rect, angle);
+    const gradient = context.createLinearGradient(points.x1, points.y1, points.x2, points.y2);
+    gradient.addColorStop(0, color1);
+    gradient.addColorStop(1, color2);
+    return gradient;
+  }
+  const cx = rect.x + rect.w / 2;
+  const cy = rect.y + rect.h / 2;
+  const radius = Math.max(1, Math.hypot(rect.w, rect.h) / 2);
+  const gradient = context.createRadialGradient(cx, cy, 0, cx, cy, radius);
+  gradient.addColorStop(0, color1);
+  gradient.addColorStop(1, color2);
+  return gradient;
+}
+
+function svgPaint(mode, color1, color2, angle, rect, id){
+  if (mode === 'solid') return { fill: color1, def: '' };
+  const stops = `<stop offset="0" stop-color="${color1}"/><stop offset="1" stop-color="${color2}"/>`;
+  if (mode === 'radial'){
+    const cx = rect.x + rect.w / 2;
+    const cy = rect.y + rect.h / 2;
+    const radius = Math.max(1, Math.hypot(rect.w, rect.h) / 2);
+    return {
+      fill: `url(#${id})`,
+      def: `<radialGradient id="${id}" gradientUnits="userSpaceOnUse" cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(radius)}">${stops}</radialGradient>`
+    };
+  }
+  const points = gradientPoints(rect, angle);
+  return {
+    fill: `url(#${id})`,
+    def: `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${fmt(points.x1)}" y1="${fmt(points.y1)}" x2="${fmt(points.x2)}" y2="${fmt(points.y2)}">${stops}</linearGradient>`
+  };
+}
+
+/* ------------------------------- Lecture ------------------------------- */
+
+function hexToRgb(hex){
+  const normalized = normalizeHex(hex) || '#000000';
+  const value = parseInt(normalized.slice(1), 16);
+  return [(value >> 16) & 255, (value >> 8) & 255, value & 255];
+}
+
+function relativeLuminance(hex){
+  const channels = hexToRgb(hex).map(channel => {
+    const value = channel / 255;
+    return value <= 0.03928 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+}
+
+function contrastRatio(colorA, colorB){
+  const a = relativeLuminance(colorA);
+  const b = relativeLuminance(colorB);
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+}
+
+/* ------------------------------ Dessin -------------------------------- */
+
+let lastInfo = null;
+
+function showEmptyState(title, text){
+  const canvas = $('#canvas');
+  const empty = $('#canvasEmpty');
+  const meta = $('#meta');
+  const warnings = $('#warnings');
+  if (canvas) canvas.hidden = true;
+  if (empty) empty.hidden = false;
+  $('#emptyTitle').textContent = title;
+  $('#emptyText').textContent = text;
+  if (meta) meta.innerHTML = '';
+  if (warnings) warnings.innerHTML = '';
+}
+
+function setExportEnabled(enabled){
+  ['#dlPng', '#dlSvg', '#copyBtn'].forEach(selector => {
+    const button = $(selector);
+    if (button) button.disabled = !enabled;
+  });
+}
+
+function drawCanvasRoundRect(context, x, y, w, h, radius){
+  const r = Math.max(0, Math.min(radius, w / 2, h / 2));
+  context.beginPath();
+  context.moveTo(x + r, y);
+  context.lineTo(x + w - r, y);
+  context.quadraticCurveTo(x + w, y, x + w, y + r);
+  context.lineTo(x + w, y + h - r);
+  context.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  context.lineTo(x + r, y + h);
+  context.quadraticCurveTo(x, y + h, x, y + h - r);
+  context.lineTo(x, y + r);
+  context.quadraticCurveTo(x, y, x + r, y);
+  context.closePath();
+}
+
+function drawLogo(context, info){
+  if (!logoImg || !info.logo) return;
+  const geometry = info.logo;
+  const design = state.design;
+  const imageWidth = logoImg.naturalWidth || logoImg.width || 1;
+  const imageHeight = logoImg.naturalHeight || logoImg.height || 1;
+  const scale = Math.min(geometry.inner / imageWidth, geometry.inner / imageHeight);
+  const width = imageWidth * scale;
+  const height = imageHeight * scale;
+  const x = geometry.x + geometry.box / 2 - width / 2;
+  const y = geometry.y + geometry.box / 2 - height / 2;
+
+  context.save();
+  context.fillStyle = '#ffffff';
+  drawCanvasRoundRect(context, geometry.x, geometry.y, geometry.box, geometry.box, geometry.radius);
+  context.fill();
+
+  context.save();
+  if (design.logoRound){
+    drawCanvasRoundRect(
+      context,
+      geometry.x + geometry.padding,
+      geometry.y + geometry.padding,
+      geometry.inner,
+      geometry.inner,
+      geometry.innerRadius
+    );
+    context.clip();
+  }
+  context.drawImage(logoImg, x, y, width, height);
+  context.restore();
+  context.restore();
+}
+
+function drawQRCanvas(info){
+  const canvas = $('#canvas');
+  const context = canvas.getContext('2d');
+  const design = state.design;
+  canvas.width = info.width;
+  canvas.height = info.height;
+  context.clearRect(0, 0, info.width, info.height);
+
+  if (!design.bgTransparent){
+    context.fillStyle = canvasPaint(
+      context,
+      design.bgMode,
+      design.bg1,
+      design.bg2,
+      design.bgAngle,
+      { x: 0, y: 0, w: info.width, h: info.height }
+    );
+    context.fillRect(0, 0, info.width, info.height);
+  }
+
+  const bodyPaint = canvasPaint(
+    context,
+    design.fgMode,
+    design.fg1,
+    design.fg2,
+    design.fgAngle,
+    { x: 0, y: 0, w: info.size, h: info.size }
+  );
+
+  context.fillStyle = bodyPaint;
+  context.fill(new Path2D(info.bodyPath));
+
+  context.fillStyle = design.eyeCustom ? design.eyeColor : bodyPaint;
+  context.fill(new Path2D(info.eyesPath), 'evenodd');
+
+  drawLogo(context, info);
+
+  if (info.caption){
+    context.save();
+    context.fillStyle = design.captionColor;
+    context.font = `600 ${info.capFont}px ${FONT_STACK}`;
+    context.textAlign = 'center';
+    context.textBaseline = 'alphabetic';
+    context.fillText(
+      info.caption,
+      info.width / 2,
+      info.size + info.capH / 2 + info.capFont * 0.35
+    );
+    context.restore();
+  }
+}
+
+function updateInfoPanel(info){
+  const design = state.design;
+  const meta = $('#meta');
+  const warnings = $('#warnings');
+
+  const chips = [
+    `<span class="chip accent">Version ${info.version}</span>`,
+    `<span class="chip">${info.count} × ${info.count} modules</span>`,
+    `<span class="chip">Correction ${design.ecc}</span>`,
+    `<span class="chip">${info.width} × ${info.height} px</span>`,
+    `<span class="chip">${info.bytes} octet${info.bytes > 1 ? 's' : ''}</span>`
+  ];
+  if (design.logo) chips.push(`<span class="chip">Logo ${design.logoSize} %</span>`);
+  meta.innerHTML = chips.join('');
+
+  const foregrounds = [design.fg1];
+  if (design.fgMode !== 'solid') foregrounds.push(design.fg2);
+  const backgrounds = [design.bgTransparent ? '#ffffff' : design.bg1];
+  if (!design.bgTransparent && design.bgMode !== 'solid') backgrounds.push(design.bg2);
+
+  let minimumContrast = Infinity;
+  for (const foreground of foregrounds){
+    for (const background of backgrounds){
+      minimumContrast = Math.min(minimumContrast, contrastRatio(foreground, background));
+    }
+  }
+
+  const messages = [];
+  if (minimumContrast < 3){
+    messages.push('Contraste faible : choisissez un fond plus clair ou des modules plus sombres pour faciliter le scan.');
+  } else if (!design.bgTransparent && relativeLuminance(design.fg1) > relativeLuminance(design.bg1) + 0.05){
+    messages.push('Modules clairs sur fond sombre : certains lecteurs préfèrent l’inverse. Pensez à tester.');
+  }
+  if (design.margin < 2){
+    messages.push('Marge de sécurité très faible : laissez au moins 4 modules autour du code pour un scan fiable.');
+  }
+  if (design.logo && design.ecc !== 'H'){
+    messages.push('Un logo masque une partie du code : passez la correction d’erreur en H.');
+  }
+  if (design.moduleShape === 'dots' || design.moduleShape === 'diamond'){
+    const shape = MODULE_SHAPES.find(item => item.id === design.moduleShape);
+    messages.push(`Forme « ${shape ? shape.label : design.moduleShape} » décorative : testez le scan avec plusieurs téléphones, elle peut réduire la lisibilité.`);
+  }
+
+  warnings.innerHTML = messages.map(message => (
+    `<div class="warning">${ICONS.alert}<span>${message}</span></div>`
+  )).join('');
+}
+
+function render(){
+  const payload = buildPayload();
+  const bytes = payload ? new TextEncoder().encode(payload).length : 0;
+  const payloadInfo = $('#payloadInfo');
+
+  if (!payload){
+    payloadInfo.textContent = 'vide';
+    payloadInfo.classList.remove('error');
+    payloadInfo.title = 'Aucun contenu à encoder';
+    lastInfo = null;
+    showEmptyState('Ajoutez du contenu', 'Renseignez les champs pour voir votre QR code apparaître.');
+    setExportEnabled(false);
+    return;
+  }
+
+  payloadInfo.textContent = `${bytes} octet${bytes > 1 ? 's' : ''}`;
+  payloadInfo.classList.remove('error');
+  payloadInfo.title = `${bytes} octet${bytes > 1 ? 's' : ''} encodé${bytes > 1 ? 's' : ''} en UTF-8`;
+
+  if (typeof qrcode !== 'function'){
+    lastInfo = null;
+    showEmptyState('Moteur QR indisponible', 'La bibliothèque intégrée n’a pas pu démarrer. Rechargez la page pour réessayer.');
+    setExportEnabled(false);
+    return;
+  }
+
+  ensureLogoLoaded();
+
+  try {
+    const info = computeInfo(payload, bytes);
+    lastInfo = info;
+    drawQRCanvas(info);
+    updateInfoPanel(info);
+    $('#canvas').hidden = false;
+    $('#canvasEmpty').hidden = true;
+    setExportEnabled(true);
+    const pngButton = $('#dlPng');
+    if (pngButton) pngButton.title = `Télécharger le PNG ${info.width} × ${info.height} px`;
+  } catch (error){
+    const message = String(error && error.message ? error.message : error);
+    const overflow = /overflow|length|too/i.test(message);
+    lastInfo = null;
+    payloadInfo.textContent = overflow ? 'trop long' : 'erreur';
+    payloadInfo.classList.add('error');
+    showEmptyState(
+      overflow ? 'Contenu trop long' : 'QR code impossible',
+      overflow
+        ? 'Réduisez la quantité de données ou choisissez un niveau de correction d’erreur plus bas.'
+        : 'Vérifiez les champs saisis puis réessayez.'
+    );
+    setExportEnabled(false);
+  }
+}
+
+/* -------------------------------- SVG --------------------------------- */
+
+const SVG_FONT_STACK = "'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif";
+
+function buildSvg(info){
+  const design = state.design;
+  const defs = [];
+  let background = '';
+
+  if (!design.bgTransparent){
+    const paint = svgPaint(
+      design.bgMode,
+      design.bg1,
+      design.bg2,
+      design.bgAngle,
+      { x: 0, y: 0, w: info.width, h: info.height },
+      'bgPaint'
+    );
+    if (paint.def) defs.push(paint.def);
+    background = `<rect width="${info.width}" height="${info.height}" fill="${paint.fill}"/>`;
+  }
+
+  const foreground = svgPaint(
+    design.fgMode,
+    design.fg1,
+    design.fg2,
+    design.fgAngle,
+    { x: 0, y: 0, w: info.size, h: info.size },
+    'fgPaint'
+  );
+  if (foreground.def) defs.push(foreground.def);
+  const eyeFill = design.eyeCustom ? design.eyeColor : foreground.fill;
+
+  let logoMarkup = '';
+  if (info.logo && design.logo){
+    const geometry = info.logo;
+    if (design.logoRound){
+      defs.push(
+        `<clipPath id="logoClip"><rect x="${fmt(geometry.x + geometry.padding)}" y="${fmt(geometry.y + geometry.padding)}" width="${fmt(geometry.inner)}" height="${fmt(geometry.inner)}" rx="${fmt(geometry.innerRadius)}"/></clipPath>`
+      );
+    }
+    logoMarkup = `<rect x="${fmt(geometry.x)}" y="${fmt(geometry.y)}" width="${fmt(geometry.box)}" height="${fmt(geometry.box)}" rx="${fmt(geometry.radius)}" fill="#ffffff"/>`;
+    logoMarkup += `<image x="${fmt(geometry.x + geometry.padding)}" y="${fmt(geometry.y + geometry.padding)}" width="${fmt(geometry.inner)}" height="${fmt(geometry.inner)}" preserveAspectRatio="xMidYMid meet" href="${escapeHtml(design.logo)}"${design.logoRound ? ' clip-path="url(#logoClip)"' : ''}/>`;
+  }
+
+  let captionMarkup = '';
+  if (info.caption){
+    const baseline = info.size + info.capH / 2 + info.capFont * 0.35;
+    captionMarkup = `<text x="${fmt(info.width / 2)}" y="${fmt(baseline)}" text-anchor="middle" font-family="${SVG_FONT_STACK}" font-size="${fmt(info.capFont)}" font-weight="600" fill="${design.captionColor}">${escapeHtml(info.caption)}</text>`;
+  }
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${info.width}" height="${info.height}" viewBox="0 0 ${info.width} ${info.height}" role="img" aria-label="QR code généré avec Stever QR Studio">
+<title>QR code généré avec Stever QR Studio — ING STEVER</title>
+<defs>${defs.join('')}</defs>
+${background}
+<path d="${info.bodyPath}" fill="${foreground.fill}"/>
+<path d="${info.eyesPath}" fill="${eyeFill}" fill-rule="evenodd"/>
+${logoMarkup}
+${captionMarkup}
+</svg>`;
+}
+
+/* ------------------------------ Export -------------------------------- */
+
+function triggerDownload(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.style.display = 'none';
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+function exportFilename(extension){
+  const info = lastInfo;
+  const dimensions = info ? `-${info.width}x${info.height}` : '';
+  return `stever-qr-${state.type}${dimensions}.${extension}`;
+}
+
+async function downloadPng(){
+  await ensureLogoLoaded();
+  render();
+  if (!lastInfo) return;
+  const canvas = $('#canvas');
+  canvas.toBlob(blob => {
+    if (!blob){
+      toast('Impossible de générer le PNG.', true);
+      return;
+    }
+    triggerDownload(blob, exportFilename('png'));
+    toast('PNG téléchargé.');
+  }, 'image/png');
+}
+
+function downloadSvg(){
+  render();
+  if (!lastInfo) return;
+  const svg = buildSvg(lastInfo);
+  triggerDownload(
+    new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }),
+    exportFilename('svg')
+  );
+  toast('SVG téléchargé.');
+}
+
+async function copyImage(){
+  await ensureLogoLoaded();
+  render();
+  if (!lastInfo) return;
+  const canvas = $('#canvas');
+
+  if (!navigator.clipboard || typeof window.ClipboardItem === 'undefined'){
+    toast('Copie non prise en charge par ce navigateur. Utilisez le téléchargement PNG.', true);
+    return;
+  }
+
+  canvas.toBlob(async blob => {
+    if (!blob){
+      toast('Impossible de copier l’image.', true);
+      return;
+    }
+    try {
+      await navigator.clipboard.write([new window.ClipboardItem({ 'image/png': blob })]);
+      toast('Image copiée dans le presse-papiers.');
+    } catch (error){
+      toast('Copie impossible. Utilisez le téléchargement PNG.', true);
+    }
+  }, 'image/png');
+}
+
+/* -------------------------------- Init -------------------------------- */
+
+function init(){
+  loadState();
+  buildTypeGrid();
+  buildForms();
+  buildShapeGrids();
+  buildPresets();
+  bindEvents();
+  updateTypeUI();
+  syncUI(true);
+  ensureLogoLoaded();
+  render();
+}
+
+init();
+
+
+
+})();
+</script>
+
+</body>
+</html>
