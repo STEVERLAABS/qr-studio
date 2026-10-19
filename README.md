@@ -1,8 +1,14 @@
-# QR Studio
+<p align="center">
+  <img src="logo.svg" alt="Stever QR Studio — ING STEVER" width="460">
+</p>
+
+# Stever QR Studio
 
 Générateur de QR code entièrement personnalisable, autonome et 100 % local : un seul fichier HTML, aucune installation, aucun compte, aucune donnée envoyée.
 
-![Exemple de QR code généré avec QR Studio](demo-qr.png)
+🌐 **Site en ligne :** <https://amerbenouis.github.io/qr-studio/>
+
+![Exemple de QR code généré avec Stever QR Studio](demo-qr.png)
 
 ## Fonctionnalités
 
@@ -42,11 +48,10 @@ Les réglages sont conservés automatiquement dans le navigateur via `localStora
 
 ## Utilisation
 
-1. Téléchargez `qr-studio.html`.
-2. Ouvrez-le dans un navigateur récent (Chrome, Edge, Firefox, Safari).
-3. Renseignez le contenu, personnalisez le style, puis exportez.
+1. Ouvrez le site : <https://amerbenouis.github.io/qr-studio/> ou téléchargez `index.html`.
+2. Renseignez le contenu, personnalisez le style, puis exportez.
 
-Aucune connexion réseau n'est nécessaire : la bibliothèque QR est intégrée au fichier.
+Aucune connexion réseau n'est nécessaire après le chargement : la bibliothèque QR est intégrée au fichier.
 
 ## Conseils pour un scan fiable
 
@@ -64,12 +69,18 @@ Aucune connexion réseau n'est nécessaire : la bibliothèque QR est intégrée 
 
 | Fichier | Rôle |
 | --- | --- |
-| `qr-studio.html` | L'application complète (HTML + CSS + JavaScript + bibliothèque QR) |
+| `index.html` | L'application complète (HTML + CSS + JavaScript + bibliothèque QR) |
+| `qr-studio.html` | Copie autonome du même fichier (double extension conservée) |
+| `logo.svg` | Logo horizontal « STEVER QR Studio · ING STEVER » |
+| `logo-mark.svg` | Emblème carré (avatar, favicon haute résolution) |
+| `favicon.svg` | Favicon simplifié |
 | `demo-qr.png` | Exemple de QR code généré |
+| `LICENSE` | Droits de publication — ING STEVER |
 | `THIRD-PARTY-NOTICES.md` | Licences des bibliothèques intégrées |
 
-## Licence
+## Licence et droits
 
-Projet privé — © 2026. Tous droits réservés.
+**© 2026 ING STEVER — Tous droits réservés.**
+Toute reproduction, distribution ou modification sans autorisation écrite préalable est interdite (voir `LICENSE`).
 
 La bibliothèque intégrée `qrcode-generator` est distribuée sous licence MIT (voir `THIRD-PARTY-NOTICES.md`).
