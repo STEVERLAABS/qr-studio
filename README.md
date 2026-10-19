@@ -6,7 +6,7 @@
 
 Générateur de QR code entièrement personnalisable, autonome et 100 % local : un seul fichier HTML, aucune installation, aucun compte, aucune donnée envoyée.
 
-🌐 **Site en ligne :** <https://amerbenouis.github.io/qr-studio/>
+🌐 **Site en ligne :** <https://steverlaabs.github.io/qr-studio/>
 
 ![Exemple de QR code généré avec Stever QR Studio](demo-qr.png)
 
@@ -48,7 +48,7 @@ Les réglages sont conservés automatiquement dans le navigateur via `localStora
 
 ## Utilisation
 
-1. Ouvrez le site : <https://amerbenouis.github.io/qr-studio/> ou téléchargez `index.html`.
+1. Ouvrez le site : <https://steverlaabs.github.io/qr-studio/> ou téléchargez `index.html`.
 2. Renseignez le contenu, personnalisez le style, puis exportez.
 
 Aucune connexion réseau n'est nécessaire après le chargement : la bibliothèque QR est intégrée au fichier.
